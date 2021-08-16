@@ -12,6 +12,7 @@ import org.apache.http.protocol.HttpRequestHandler;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URLDecoder;
 
 public class ModTransferHandler implements HttpRequestHandler {
     protected final Log log = LogFactory.getLog(getClass());
@@ -24,8 +25,16 @@ public class ModTransferHandler implements HttpRequestHandler {
     @Override
     public void handle(HttpRequest request, HttpResponse response, HttpContext context) throws HttpException, IOException {
         String[] parts = request.getRequestLine().getUri().split("/");
-        String fileName = parts[parts.length-1];
-        File modFile = new File(this.config.modsFolder, fileName);
+        String fileName = URLDecoder.decode(parts[parts.length-1], "UTF-8");
+        File modFile = new File(this.config.commonModsFolder, fileName);
+        if (!modFile.exists()) {
+            modFile = new File(this.config.optionalModsFolder, fileName);
+            if (!modFile.exists()) {
+                response.setStatusCode(404);
+                return;
+            }
+        }
+        response.setStatusCode(200);
         response.setEntity(new FileEntity(modFile));
     }
 }

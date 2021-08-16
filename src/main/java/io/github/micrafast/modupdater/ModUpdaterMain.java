@@ -13,7 +13,6 @@ import java.lang.reflect.Type;
 import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Scanner;
 
 public class ModUpdaterMain {
     public static Map<String, String> language;
@@ -55,7 +54,7 @@ public class ModUpdaterMain {
                 } else {
                     config = prettyGson.fromJson(Utils.readFile(clientConfigFile,"UTF-8"), ClientConfig.class);
                 }
-                new UpdaterClient(config);
+                new UpdaterClient(config, clientConfigFile);
             } catch (IOException e) {
                 e.printStackTrace();
             }

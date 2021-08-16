@@ -34,7 +34,7 @@ public class WorkerThread extends Thread {
         } catch (ConnectionClosedException ex) {
             // Shut up
         } catch (IOException ex) {
-            log.error("I/O Error: ", ex);
+            // Shut up
         } catch (HttpException ex) {
             log.error("Unrecoverable HTTP protocol violation: ", ex);
         } finally {

@@ -5,6 +5,7 @@ import io.github.micrafast.modupdater.server.handlers.ModListHandler;
 import io.github.micrafast.modupdater.server.handlers.ModTransferHandler;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.http.client.protocol.ResponseContentEncoding;
 import org.apache.http.impl.DefaultBHttpServerConnection;
 import org.apache.http.protocol.*;
 
@@ -45,7 +46,7 @@ public class UpdaterServer {
         this.service = new HttpService(processor, mapper);
 
         serverSocket = new ServerSocket(this.config.port);
-        log.info(String.format("Server started listening at port %d with mods folder: %s", this.config.port, this.config.modsFolder));
+        log.info(String.format("Server started listening at port %d with mods folder: %s", this.config.port, this.config.commonModsFolder));
         while (!Thread.interrupted()) {
             Socket socket = serverSocket.accept();
             DefaultBHttpServerConnection connection = new DefaultBHttpServerConnection(8*1024);
@@ -57,10 +58,15 @@ public class UpdaterServer {
     }
 
     private boolean checkConfig() {
-        File folder = new File(this.config.modsFolder);
+        File folder = new File(this.config.commonModsFolder);
+        File folder2 = new File(this.config.optionalModsFolder);
         if (!folder.isDirectory()) {
-            log.error("Check configuration failed: Mod directory does not exist");
-            return false;
+            log.info(String.format("%s not exist, making directory...", folder.getAbsolutePath()));
+            folder.mkdir();
+        }
+        if (!folder2.isDirectory()) {
+            log.info(String.format("%s not exist, making directory...", folder2.getAbsolutePath()));
+            folder2.mkdir();
         }
         return true;
     }

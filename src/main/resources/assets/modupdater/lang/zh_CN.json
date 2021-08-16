@@ -1,3 +1,17 @@
 {
-  "window.title": "Mod更新器"
+  "window.title": "Mod更新器",
+  "window.synchronize" : "同步",
+  "window.address": "远程同步地址：",
+  "window.mods": "本地Mods文件夹：",
+  "window.autoUpdate": "启动时自动更新Mods",
+  "window.updateOptionalMods": "更新可选mods",
+  "popup.title.message": "提示",
+  "popup.title.confirm": "确定",
+  "popup.modsFolderDoesNotExist": "Mods文件夹不存在！检查modupdater_client_config.json是否设置错误。",
+  "log.receivingModList": "获取远端mod列表...",
+  "log.alreadyExists": "%s 已存在且与服务端不同，开始重新下载",
+  "log.startDownload": "开始下载 %s",
+  "log.startDownloadOptional": "开始下载可选Mod %s",
+  "log.delete": "删除 %s",
+  "log.updateComplete": "Mod更新完毕!"
 }

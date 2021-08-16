@@ -1,3 +1,17 @@
 {
-  "window.title": "Mod Updater"
+  "window.title": "Mod Updater",
+  "window.synchronize" : "Sync",
+  "window.address": "Remote: ",
+  "window.mods": "Mods Folder: ",
+  "window.autoUpdate": "Automatically update when start",
+  "window.updateOptionalMods": "Add optional mods",
+  "popup.title.message": "Message",
+  "popup.title.confirm": "Confirm",
+  "popup.modsFolderDoesNotExist": "Mods folder does not exist! Please check modupdater_client_config.json.",
+  "log.receivingModList": "Receiving mods list from server side...",
+  "log.alreadyExists": "%s had already existed and is different from server side, started updating",
+  "log.startDownload": "Start downloading %s",
+  "log.startDownloadOptional": "Start downloading optional mod %s",
+  "log.delete": "Deleting %s",
+  "log.updateComplete": "Update Complete!"
 }

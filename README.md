@@ -1,4 +1,4 @@
-#  Modpack Updater (WIP)
+#  Modpack Updater
 ## Synchronize Minecraft mods between server and client
 
 Are you fed up with players in your server asking you to add some mods?  
@@ -17,7 +17,7 @@ For server side, run this command (mods folder under working directory is requir
 Then it would output logs and left a 
 ``modupdater_server_config.json``, 
 which is the configuration file that you can modify.
-#### Client side (WIP), still in imagination yet :)
+#### Client side
 For client side, just double-click the 
 ``ModpackUpdater-version.jar`` 
 file and it would left a 

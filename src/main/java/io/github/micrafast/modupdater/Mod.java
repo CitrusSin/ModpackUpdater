@@ -29,6 +29,8 @@ public class Mod {
             FileInputStream inputStream = new FileInputStream(file);
             DigestInputStream digestStream =
                     new DigestInputStream(inputStream, MessageDigest.getInstance("MD5"));
+            byte[] buffer = new byte[4096];
+            while (digestStream.read(buffer) > -1) {}
             MessageDigest md = digestStream.getMessageDigest();
             byte[] digest = md.digest();
             md5 = Hex.encodeHexString(digest);
@@ -45,16 +47,22 @@ public class Mod {
         return fileName;
     }
 
-    public static Mod[] getModList(File directory) {
+    public static List<Mod> getModList(File directory) {
         List<Mod> mods = new LinkedList<>();
         File[] files = directory.listFiles();
         for (File file : files) {
             String fileName = file.getName();
+            log.info("Adding filename" + fileName);
             String suffix = fileName.substring(fileName.length()-4);
             if (suffix.equalsIgnoreCase(".jar")) {
                 mods.add(new Mod(file));
             }
         }
+        return mods;
+    }
+
+    public static Mod[] getModArray(File directory) {
+        List<Mod> mods = getModList(directory);
         Mod[] list = new Mod[mods.size()];
         return mods.toArray(list);
     }
