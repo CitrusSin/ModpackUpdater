@@ -52,7 +52,6 @@ public class Mod {
         File[] files = directory.listFiles();
         for (File file : files) {
             String fileName = file.getName();
-            log.info("Adding filename" + fileName);
             String suffix = fileName.substring(fileName.length()-4);
             if (suffix.equalsIgnoreCase(".jar")) {
                 mods.add(new Mod(file));
