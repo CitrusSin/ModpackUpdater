@@ -21,7 +21,7 @@ public class MainWindow extends JFrame {
 
     protected void construct() {
         this.setTitle(language.get("window.title"));
-        this.setSize(800, 550);
+        this.setSize(1200, 850);
         this.setLocationRelativeTo(null);
 
         JPanel panel = new JPanel(new BorderLayout(3,3));
