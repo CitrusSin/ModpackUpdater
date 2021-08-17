@@ -25,15 +25,12 @@ public class UpdaterServer {
     public UpdaterServer(ServerConfig config) throws IOException {
         this.config = config;
         instance = this;
+        checkConfig();
         manifestManager = new ModManifestManager(config);
         startServer();
     }
 
     private void startServer() throws IOException {
-        if (!checkConfig()) {
-            return;
-        }
-
         UriHttpRequestHandlerMapper mapper = new UriHttpRequestHandlerMapper();
         mapper.register("/mods/list", new ModListHandler(config));
         mapper.register("/mods/downloads/*", new ModTransferHandler(config));
