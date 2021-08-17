@@ -27,10 +27,9 @@ public class UpdaterServer {
         instance = this;
         checkConfig();
         manifestManager = new ModManifestManager(config);
-        startServer();
     }
 
-    private void startServer() throws IOException {
+    public void runServer() throws IOException {
         UriHttpRequestHandlerMapper mapper = new UriHttpRequestHandlerMapper();
         mapper.register("/mods/list", new ModListHandler(config));
         mapper.register("/mods/downloads/*", new ModTransferHandler(config));
@@ -53,6 +52,7 @@ public class UpdaterServer {
             t.setDaemon(false);
             t.start();
         }
+        manifestManager.close();
     }
 
     private boolean checkConfig() {

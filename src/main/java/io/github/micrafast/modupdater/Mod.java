@@ -34,6 +34,7 @@ public class Mod {
             MessageDigest md = digestStream.getMessageDigest();
             byte[] digest = md.digest();
             md5 = Hex.encodeHexString(digest);
+            digestStream.close();
         } catch (NoSuchAlgorithmException | IOException e) {
             log.error("MD5 Calculation failed: ", e);
         }

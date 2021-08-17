@@ -44,7 +44,7 @@ public class ModUpdaterMain {
                 } else {
                     config = prettyGson.fromJson(Utils.readFile(serverConfigFile,"UTF-8"), ServerConfig.class);
                 }
-                new UpdaterServer(config);
+                new UpdaterServer(config).runServer();
             } catch (IOException e) {
                 e.printStackTrace();
             }
