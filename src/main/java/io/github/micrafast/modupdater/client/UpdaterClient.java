@@ -11,7 +11,7 @@ import io.github.micrafast.modupdater.client.network.NetworkUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import javax.swing.JOptionPane;
+import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
 import java.net.URLEncoder;

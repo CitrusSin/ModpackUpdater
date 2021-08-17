@@ -5,7 +5,6 @@ import io.github.micrafast.modupdater.server.handlers.ModListHandler;
 import io.github.micrafast.modupdater.server.handlers.ModTransferHandler;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.http.client.protocol.ResponseContentEncoding;
 import org.apache.http.impl.DefaultBHttpServerConnection;
 import org.apache.http.protocol.*;
 
@@ -18,6 +17,7 @@ public class UpdaterServer {
     private static UpdaterServer instance;
 
     protected final Log log = LogFactory.getLog(this.getClass());
+    protected ModManifestManager manifestManager;
     HttpService service;
     ServerSocket serverSocket;
     final ServerConfig config;
@@ -25,6 +25,7 @@ public class UpdaterServer {
     public UpdaterServer(ServerConfig config) throws IOException {
         this.config = config;
         instance = this;
+        manifestManager = new ModManifestManager(config);
         startServer();
     }
 
@@ -69,6 +70,10 @@ public class UpdaterServer {
             folder2.mkdir();
         }
         return true;
+    }
+
+    public ModManifestManager getManifestManager() {
+        return manifestManager;
     }
 
     public static UpdaterServer getInstance() {

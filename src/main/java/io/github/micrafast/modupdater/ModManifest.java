@@ -20,4 +20,8 @@ public class ModManifest {
     public ModManifest(File commonDir, File optionalDir) {
         this(Mod.getModList(commonDir), Mod.getModList(optionalDir));
     }
+
+    public ModManifest(String commonDir, String optionalDir) {
+        this(new File(commonDir), new File(optionalDir));
+    }
 }

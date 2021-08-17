@@ -4,18 +4,16 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import io.github.micrafast.modupdater.ModManifest;
 import io.github.micrafast.modupdater.server.ServerConfig;
+import io.github.micrafast.modupdater.server.UpdaterServer;
 import org.apache.http.HttpException;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.ContentType;
-import org.apache.http.entity.StringEntity;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.protocol.HttpRequestHandler;
 
-import java.io.File;
 import java.io.IOException;
-import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 
 public class ModListHandler implements HttpRequestHandler {
@@ -28,9 +26,7 @@ public class ModListHandler implements HttpRequestHandler {
     @Override
     public void handle(HttpRequest request, HttpResponse response, HttpContext context) throws HttpException, IOException {
         Gson gson = new GsonBuilder().disableHtmlEscaping().create();
-        File commonModDir = new File(this.config.commonModsFolder);
-        File optionalModDir = new File(this.config.optionalModsFolder);
-        ModManifest mods = new ModManifest(commonModDir, optionalModDir);
+        ModManifest mods = UpdaterServer.getInstance().getManifestManager().getModManifest();
         String ctx = gson.toJson(mods);
         response.setStatusCode(200);
         ByteArrayEntity entity = new ByteArrayEntity(ctx.getBytes(StandardCharsets.UTF_8), ContentType.APPLICATION_JSON);
