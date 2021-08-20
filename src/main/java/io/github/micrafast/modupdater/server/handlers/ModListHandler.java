@@ -25,9 +25,8 @@ public class ModListHandler implements HttpRequestHandler {
 
     @Override
     public void handle(HttpRequest request, HttpResponse response, HttpContext context) throws HttpException, IOException {
-        Gson gson = new GsonBuilder().disableHtmlEscaping().create();
         ModManifest mods = UpdaterServer.getInstance().getManifestManager().getModManifest();
-        String ctx = gson.toJson(mods);
+        String ctx = mods.getJson();
         response.setStatusCode(200);
         ByteArrayEntity entity = new ByteArrayEntity(ctx.getBytes(StandardCharsets.UTF_8), ContentType.APPLICATION_JSON);
         entity.setContentEncoding("UTF-8");

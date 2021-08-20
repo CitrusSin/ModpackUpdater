@@ -1,4 +1,4 @@
-package io.github.micrafast.modupdater.client.network;
+package io.github.micrafast.modupdater.network;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -17,18 +17,20 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 public class NetworkUtils {
-    private static Log log = LogFactory.getLog(NetworkUtils.class);
+    private static final Log log = LogFactory.getLog(NetworkUtils.class);
     static CloseableHttpClient httpClient = HttpClients.createDefault();
 
     public static String getString(String url) throws IOException {
         HttpGet get = new HttpGet(url);
-        String result = httpClient.execute(get, new StringResponseHandler());
-        return result;
+        return httpClient.execute(get, new StringResponseHandler());
     }
 
     public static void download(String url, File file) throws IOException {
         if (!file.exists()) {
-            file.createNewFile();
+            boolean res = file.createNewFile();
+            if (!res) {
+                throw new IOException("Failed to create file: " + file.getAbsolutePath());
+            }
         }
         HttpGet get = new HttpGet(url);
         FileOutputStream stream = new FileOutputStream(file, false);

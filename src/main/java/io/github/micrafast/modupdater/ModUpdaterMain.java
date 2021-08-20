@@ -22,11 +22,12 @@ public class ModUpdaterMain {
     public static final String SERVICE_NAME = "ModpackUpdateService";
     public static final String SERVICE_VER  = "1.1";
 
+    public static final Gson prettyGson = new GsonBuilder()
+            .setPrettyPrinting()
+            .create();
+
     public static void main(String[] args) {
         loadLanguage(Locale.getDefault());
-        Gson prettyGson = new GsonBuilder()
-                .setPrettyPrinting()
-                .create();
         // Read arguments
         boolean isServer = false;
         for (String s : args) {

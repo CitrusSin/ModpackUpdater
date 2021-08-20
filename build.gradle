@@ -1,11 +1,13 @@
 plugins {
     id 'java'
+    id 'application'
 }
 
 group 'io.github.micrafast.modupdater'
 version '1.1'
 
 sourceCompatibility = 1.8
+mainClassName = 'io.github.micrafast.modupdater.ModUpdaterMain'
 
 repositories {
     mavenCentral()
@@ -24,6 +26,6 @@ jar {
         configurations.runtime.collect{zipTree(it)}
     }
     manifest {
-        attributes 'Main-Class': 'io.github.micrafast.modupdater.ModUpdaterMain'
+        attributes 'Main-Class': mainClassName
     }
 }

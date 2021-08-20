@@ -1,8 +1,12 @@
 {
   "window.title": "Mod更新器",
-  "window.synchronize" : "同步",
+  "window.update": "更新Mods",
+  "window.refreshList": "刷新",
   "window.address": "远程同步地址：",
   "window.mods": "本地Mods文件夹：",
+  "window.modsCommon": "必选Mods:",
+  "window.modsOptional": "可选Mods: ",
+  "window.modsDelete": "要删除的Mods（勾选则删除）: ",
   "window.autoUpdate": "启动时自动更新Mods",
   "window.updateOptionalMods": "更新可选mods",
   "popup.title.message": "提示",

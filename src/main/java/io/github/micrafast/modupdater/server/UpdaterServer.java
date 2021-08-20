@@ -32,7 +32,7 @@ public class UpdaterServer {
     public void runServer() throws IOException {
         UriHttpRequestHandlerMapper mapper = new UriHttpRequestHandlerMapper();
         mapper.register("/mods/list", new ModListHandler(config));
-        mapper.register("/mods/downloads/*", new ModTransferHandler(config));
+        mapper.register("/mods/downloads/*", new ModTransferHandler(config, manifestManager));
 
         HttpProcessor processor = HttpProcessorBuilder.create()
                 .add(new ResponseDate())

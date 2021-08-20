@@ -31,9 +31,7 @@ public class Utils {
 
     public static boolean containsMod(List<Mod> modList, Mod mod) {
         for (Mod m : modList) {
-            String  hash1 = m.getMD5HexString(),
-                    hash2 = mod.getMD5HexString();
-            if (hash1.equals(hash2)) {
+            if (mod.equals(m)) {
                 return true;
             }
         }
@@ -42,13 +40,10 @@ public class Utils {
 
     public static boolean containsModByFileName(List<Mod> modList, Mod mod) {
         for (Mod m : modList) {
-            String  fileName1 = m.getFileName(),
-                    fileName2 = mod.getFileName();
-            if (fileName1.equals(fileName2)) {
+            if (mod.equalsByFileName(m)) {
                 return true;
             }
         }
         return false;
     }
-
 }

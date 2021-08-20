@@ -1,21 +1,13 @@
 package io.github.micrafast.modupdater.client;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import io.github.micrafast.modupdater.Mod;
-import io.github.micrafast.modupdater.ModManifest;
 import io.github.micrafast.modupdater.ModUpdaterMain;
 import io.github.micrafast.modupdater.Utils;
 import io.github.micrafast.modupdater.client.controller.MainController;
-import io.github.micrafast.modupdater.client.network.NetworkUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
-import java.net.URLEncoder;
-import java.util.List;
 
 public class UpdaterClient {
     private static UpdaterClient instance;
@@ -25,15 +17,9 @@ public class UpdaterClient {
     ClientConfig config;
     MainController controller;
 
-    private Gson prettyGson;
-    private Gson gson;
     private File configFile;
 
     public UpdaterClient(ClientConfig config, File configFile) {
-        prettyGson = new GsonBuilder()
-                .setPrettyPrinting()
-                .create();
-        gson = new Gson();
         instance = this;
         this.config = config;
         this.configFile = configFile;
@@ -43,6 +29,7 @@ public class UpdaterClient {
         }
     }
 
+    /*
     public void updateMods() {
         try {
             String url = this.config.updateServerAddress;
@@ -125,10 +112,11 @@ public class UpdaterClient {
         }
         controller.outputLog(ModUpdaterMain.language.get("log.updateComplete"));
     }
+    */
 
     public void saveConfig(ClientConfig config) throws IOException {
         this.config = config;
-        Utils.writeFile(configFile, "UTF-8", prettyGson.toJson(config));
+        Utils.writeFile(configFile, "UTF-8", ModUpdaterMain.prettyGson.toJson(config));
     }
 
     public static UpdaterClient getInstance() {

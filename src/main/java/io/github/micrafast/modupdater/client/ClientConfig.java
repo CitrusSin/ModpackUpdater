@@ -8,4 +8,5 @@ public class ClientConfig {
     public String lookAndFeel = UIManager.getSystemLookAndFeelClassName();
     public boolean synchronizeOnStart = false;
     public boolean updateOptionalMods = false;
+    public int maxThreadCount = 10;
 }
