@@ -5,9 +5,9 @@ import io.github.micrafast.modupdater.ModManifest;
 import io.github.micrafast.modupdater.Utils;
 import io.github.micrafast.modupdater.network.NetworkUtils;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.*;
-import java.io.File;
 
 public class UpdateStrategy {
     public final ModManifest remoteManifest;
@@ -17,8 +17,8 @@ public class UpdateStrategy {
     public final Map<Mod, Boolean> optionalMods = new HashMap<>();
     public final Map<Mod, Boolean> removeMods = new HashMap<>();
 
-    public final List<DownloadThread> downloadings;
-    public final Queue<DownloadThread> queue = new LinkedList<>();
+    public final List<Thread> downloadings;
+    public final Queue<Thread> queue = new LinkedList<>();
 
     final File modsFolder;
     final int maxThreadCount;
@@ -30,7 +30,10 @@ public class UpdateStrategy {
         this.localMods = Mod.getModList(modsFolder);
         this.modsFolder = modsFolder;
         this.maxThreadCount = maxThreadCount;
-        downloadings = new ArrayList<>(maxThreadCount);
+        downloadings = new ArrayList<>();
+        if (!modsFolder.exists()) {
+            modsFolder.mkdirs();
+        }
         this.calculateDifferences();
     }
 
@@ -42,21 +45,23 @@ public class UpdateStrategy {
         }
         for (Mod mod : remoteManifest.optionalMods) {
             if (!Utils.containsMod(localMods, mod)) {
-                optionalMods.put(mod, true);
+                optionalMods.put(mod, false);
             }
         }
         for (Mod mod : localMods) {
             if ((!Utils.containsMod(remoteManifest.commonMods, mod))
                     && (!Utils.containsMod(remoteManifest.optionalMods, mod))) {
                 removeMods.put(mod, true);
+            } else if (Utils.containsMod(remoteManifest.optionalMods, mod) && (!Utils.containsMod(remoteManifest.commonMods, mod))) {
+                removeMods.put(mod, false);
             }
         }
     }
 
-    public void executeStrategy() throws IOException {
+    public void startExecuteStrategy() {
         for (Map.Entry<Mod, Boolean> entry : removeMods.entrySet()) {
             if (entry.getValue()) {
-                entry.getKey().localFile.delete();
+                addQueue(new DeleteThread(entry.getKey().localFile));
             }
         }
         for (Map.Entry<Mod, Boolean> entry : installMods.entrySet()) {
@@ -72,6 +77,10 @@ public class UpdateStrategy {
             }
         }
         startQueueListener();
+    }
+
+    protected void addQueue(Thread t) {
+        queue.add(t);
     }
 
     protected void addDownloadQueue(Mod mod, File file) {
@@ -97,18 +106,37 @@ public class UpdateStrategy {
                 }
                 if (downloadings.size() < maxThreadCount) {
                     if (!queue.isEmpty()) {
-                        DownloadThread dt = queue.poll();
+                        Thread dt = queue.poll();
                         dt.start();
                         downloadings.add(dt);
                     }
                 }
                 try {
-                    Thread.sleep(500);
+                    Thread.sleep(5);
                 } catch (InterruptedException e) {
                     return;
                 }
             }
         });
+        queueListener.start();
+    }
+
+    static class DeleteThread extends Thread {
+        final File file;
+
+        public DeleteThread(File file) {
+            this.file = file;
+        }
+
+        @Override
+        public void run() {
+            file.delete();
+        }
+
+        @Override
+        public String toString() {
+            return "${operation.delete} " + this.file.getName();
+        }
     }
 
     static class DownloadThread extends Thread {
@@ -133,7 +161,7 @@ public class UpdateStrategy {
 
         @Override
         public String toString() {
-            return this.file.getName();
+            return "${operation.download} " + this.file.getName();
         }
     }
 }

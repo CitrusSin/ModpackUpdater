@@ -2,32 +2,37 @@ package io.github.micrafast.modupdater.client.controller;
 
 import io.github.micrafast.modupdater.Mod;
 import io.github.micrafast.modupdater.ModManifest;
-import io.github.micrafast.modupdater.ModUpdaterMain;
 import io.github.micrafast.modupdater.client.ClientConfig;
 import io.github.micrafast.modupdater.client.UpdateStrategy;
 import io.github.micrafast.modupdater.client.UpdaterClient;
-import io.github.micrafast.modupdater.client.ui.controls.ObjectCheck;
-import io.github.micrafast.modupdater.network.NetworkUtils;
 import io.github.micrafast.modupdater.client.ui.MainWindow;
+import io.github.micrafast.modupdater.client.utils.I18nUtils;
+import io.github.micrafast.modupdater.network.NetworkUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import javax.swing.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.IOException;
 import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+/*
+ * Warning: trash code dump :(
+ * Controller code is really hard to write....
+ * Don't know what is MVC structure huh :(
+ * But it just works as a "controller" :P
+ */
 public class MainController {
     protected Log log = LogFactory.getLog(getClass());
     MainWindow window;
     ClientConfig config;
     Map<String, String> language;
-    UpdateStrategy strategy;
+    UpdateStrategy strategy = null;
 
     public MainController(ClientConfig config) {
         this.config = config;
@@ -40,8 +45,8 @@ public class MainController {
                 log.error("Failed setting look and feel", ex);
             }
         }
-        window = new MainWindow(ModUpdaterMain.language);
-        language = ModUpdaterMain.language;
+        window = new MainWindow(I18nUtils.language);
+        language = I18nUtils.language;
         this.initialize();
     }
 
@@ -60,47 +65,96 @@ public class MainController {
         });
         loadConfig();
         window.refreshListButton.addActionListener(e -> {
-            syncConfigAndSave();
-            setOperationsEnabled(false);
-            window.statusLabel.setText(language.get("log.receivingModList"));
             Thread t = new Thread(() -> {
-                try {
-                    strategy = new UpdateStrategy(
-                            ModManifest.fromRemote(config.updateServerAddress),
-                            new File(config.modsFolder),
-                            config.maxThreadCount
-                    );
-                    SwingUtilities.invokeAndWait(this::refreshStrategy);
-                } catch (Exception ex) {
-                    log.error(ex);
-                }
-                SwingUtilities.invokeLater(() -> setOperationsEnabled(true));
+                getStrategy();
+                SwingUtilities.invokeLater(() -> {
+                    setStatus("status.completeReceivingModList");
+                    setOperationsEnabled(true);
+                });
             });
             t.start();
         });
         window.updateButton.addActionListener(e -> startUpdateModsEDT());
-        window.autoUpdateBox.addActionListener(e -> {
-            syncConfigAndSave();
-        });
-        window.updateOptionalBox.addActionListener(e -> {
-            syncConfigAndSave();
-        });
+        window.autoUpdateBox.addActionListener(e -> syncConfigAndSave());
+        window.optionalModsList.addListSelectionListener(e -> writeModSelection());
     }
 
-    protected void refreshStrategy() {
+    private void getStrategy() {
+        try {
+            SwingUtilities.invokeAndWait(() -> {
+                syncConfigAndSave();
+                setOperationsEnabled(false);
+                setStatus("status.receivingModList");
+            });
+            strategy = new UpdateStrategy(
+                    ModManifest.fromRemote(config.updateServerAddress),
+                    new File(config.modsFolder),
+                    config.maxThreadCount
+            );
+            SwingUtilities.invokeAndWait(this::updateStrategy);
+        } catch (Exception ex) {
+            log.error(ex);
+            SwingUtilities.invokeLater(() -> popupWindow("${error.receivingModList}" + ex.getLocalizedMessage(), JOptionPane.ERROR_MESSAGE));
+        }
+    }
+
+    private void writeModSelection() {
+        List<Mod> mods = new ArrayList<>();
+
+        int[] optionalIndices = window.optionalModsList.getSelectedIndices();
+        for (int index : optionalIndices) {
+            mods.add(window.optionalModsListModel.elementAt(index));
+        }
+        for (Map.Entry<Mod, Boolean> entry : strategy.optionalMods.entrySet()) {
+            strategy.optionalMods.replace(entry.getKey(), mods.contains(entry.getKey()));
+        }
+        mods.clear();
+
+        int[] deleteIndices = window.deleteModsList.getSelectedIndices();
+        for (int index : deleteIndices) {
+            mods.add(window.deleteModsListModel.elementAt(index));
+        }
+        for (Map.Entry<Mod, Boolean> entry : strategy.removeMods.entrySet()) {
+            strategy.removeMods.replace(entry.getKey(), mods.contains(entry.getKey()));
+        }
+        mods.clear();
+    }
+
+    private void updateStrategy() {
+        window.commonModsListModel.clear();
         for (Map.Entry<Mod, Boolean> entry : strategy.installMods.entrySet()) {
             window.commonModsListModel.addElement(entry.getKey());
         }
         window.commonModsList.updateUI();
 
+        window.optionalModsListModel.clear();
+        ArrayList<Integer> selectedIndex = new ArrayList<>();
         for (Map.Entry<Mod, Boolean> entry : strategy.optionalMods.entrySet()) {
             window.optionalModsListModel.addElement(entry.getKey());
+            if (entry.getValue()) {
+                selectedIndex.add(window.optionalModsListModel.indexOf(entry.getKey()));
+            }
         }
+        int[] indices = new int[selectedIndex.size()];
+        for (int i=0;i<selectedIndex.size();i++) {
+            indices[i] = selectedIndex.get(i);
+        }
+        window.optionalModsList.setSelectedIndices(indices);
         window.optionalModsList.updateUI();
 
+        selectedIndex.clear();
+        window.deleteModsListModel.clear();
         for (Map.Entry<Mod, Boolean> entry : strategy.removeMods.entrySet()) {
             window.deleteModsListModel.addElement(entry.getKey());
+            if (entry.getValue()) {
+                selectedIndex.add(window.deleteModsListModel.indexOf(entry.getKey()));
+            }
         }
+        indices = new int[selectedIndex.size()];
+        for (int i=0;i<selectedIndex.size();i++) {
+            indices[i] = selectedIndex.get(i);
+        }
+        window.deleteModsList.setSelectedIndices(indices);
         window.deleteModsList.updateUI();
     }
 
@@ -117,14 +171,12 @@ public class MainController {
         config.updateServerAddress = window.addressField.getText();
         config.modsFolder = window.modsField.getText();
         config.synchronizeOnStart = window.autoUpdateBox.isSelected();
-        config.updateOptionalMods = window.updateOptionalBox.isSelected();
     }
 
     private void loadConfig() {
         window.addressField.setText(config.updateServerAddress);
         window.modsField.setText(config.modsFolder);
         window.autoUpdateBox.setSelected(config.synchronizeOnStart);
-        window.updateOptionalBox.setSelected(config.updateOptionalMods);
     }
 
     private void setOperationsEnabled(boolean enabled) {
@@ -132,7 +184,7 @@ public class MainController {
         window.modsField.setEnabled(enabled);
         window.addressField.setEnabled(enabled);
         window.autoUpdateBox.setEnabled(enabled);
-        window.updateOptionalBox.setEnabled(enabled);
+        window.refreshListButton.setEnabled(enabled);
     }
 
     protected void startUpdateModsEDT() {
@@ -158,15 +210,33 @@ public class MainController {
 
     private Thread createUpdateThread() {
         return new Thread(() -> {
-            Log log = LogFactory.getLog("updateThread");
+            Log log = LogFactory.getLog("updateUIThread");
             UpdaterClient client = UpdaterClient.getInstance();
             try {
+                if (strategy == null) {
+                    getStrategy();
+                }
                 client.saveConfig(config);
+                strategy.startExecuteStrategy();
+                while (strategy.isRunning()) {
+                    SwingUtilities.invokeAndWait(() -> {
+                        window.taskListModel.clear();
+                        for (Thread t : strategy.downloadings) {
+                            window.taskListModel.addElement(t);
+                        }
+                        window.taskList.updateUI();
+                    });
+                    Thread.sleep(50);
+                }
             } catch (IOException e) {
-                log.error("Save config failed: ", e);
+                log.error(e);
+                popupWindow("${error.downloadingMod}"+e.getLocalizedMessage(), JOptionPane.ERROR_MESSAGE);
+            } catch (InvocationTargetException | InterruptedException ignore) {
             }
-            //client.updateMods();
             SwingUtilities.invokeLater(() -> {
+                window.taskListModel.clear();
+                window.taskList.updateUI();
+                setStatus("status.updateComplete");
                 setOperationsEnabled(true);
             });
         });
@@ -175,14 +245,14 @@ public class MainController {
     public void popupWindow(String text, int type) {
         try {
             SwingUtilities.invokeAndWait(() -> {
-                JOptionPane.showMessageDialog(window, text, language.get("popup.title.message"), type);
+                JOptionPane.showMessageDialog(window, I18nUtils.languageReplace(text), language.get("popup.title.message"), type);
             });
         } catch (Exception e) {
             log.error(e);
         }
     }
 
-    public void outputLog(String text) {
-        SwingUtilities.invokeLater(() -> window.centerText.append(text + "\n"));
+    protected void setStatus(String langKey) {
+        window.statusLabel.setText(language.get(langKey));
     }
 }

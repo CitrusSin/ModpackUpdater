@@ -10,12 +10,11 @@
   "window.autoUpdate": "Automatically update when start",
   "window.updateOptionalMods": "Add optional mods",
   "popup.title.message": "Message",
-  "popup.title.confirm": "Confirm",
-  "popup.modsFolderDoesNotExist": "Mods folder does not exist! Please check modupdater_client_config.json.",
-  "log.receivingModList": "Receiving mods list from server side...",
-  "log.alreadyExists": "%s had already existed and is different from server side, started updating",
-  "log.startDownload": "Start downloading %s",
-  "log.startDownloadOptional": "Start downloading optional mod %s",
-  "log.delete": "Deleting %s",
-  "log.updateComplete": "Update Complete!"
+  "status.receivingModList": "Receiving mods list from server side...",
+  "status.completeReceivingModList": "Done!",
+  "status.updateComplete": "Update Complete!",
+  "operation.download": "Download operation: ",
+  "operation.delete": "Delete operation: ",
+  "error.receivingModList": "Exception occurred when receiving Mod list: ",
+  "error.downloadingMod": "Exception occurred when downloading Mod: "
 }

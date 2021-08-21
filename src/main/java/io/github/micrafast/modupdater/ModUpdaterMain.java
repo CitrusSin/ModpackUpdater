@@ -2,7 +2,6 @@ package io.github.micrafast.modupdater;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
 import io.github.micrafast.modupdater.client.ClientConfig;
 import io.github.micrafast.modupdater.client.UpdaterClient;
 import io.github.micrafast.modupdater.server.ServerConfig;
@@ -10,24 +9,16 @@ import io.github.micrafast.modupdater.server.UpdaterServer;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.lang.reflect.Type;
-import java.nio.charset.StandardCharsets;
-import java.util.Locale;
-import java.util.Map;
 
 public class ModUpdaterMain {
-    public static Map<String, String> language;
     public static final String SERVICE_NAME = "ModpackUpdateService";
-    public static final String SERVICE_VER  = "1.1";
+    public static final String SERVICE_VER  = "1.2.000";
 
     public static final Gson prettyGson = new GsonBuilder()
             .setPrettyPrinting()
             .create();
 
     public static void main(String[] args) {
-        loadLanguage(Locale.getDefault());
         // Read arguments
         boolean isServer = false;
         for (String s : args) {
@@ -65,34 +56,4 @@ public class ModUpdaterMain {
         }
     }
 
-    public static void loadLanguage(Locale locale) {
-        InputStream inputStream =
-                ClassLoader.getSystemClassLoader()
-                        .getResourceAsStream(
-                                String.format("assets/modupdater/lang/%s_%s.json",
-                                        locale.getLanguage(),
-                                        locale.getCountry()
-                                )
-                        );
-        if (inputStream == null) {
-            inputStream = ClassLoader.getSystemClassLoader()
-                            .getResourceAsStream(
-                                    String.format("assets/modupdater/lang/%s.json",
-                                            locale.getLanguage()
-                                    )
-                            );
-        }
-        if (inputStream == null) {
-            inputStream = ClassLoader.getSystemClassLoader()
-                    .getResourceAsStream(
-                            "assets/modupdater/lang/en_US.json"
-                    );
-        }
-        InputStreamReader reader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
-        Gson mapgson = new GsonBuilder()
-                .enableComplexMapKeySerialization()
-                .create();
-        Type type = new TypeToken<Map<String, String>>(){}.getType();
-        language = mapgson.fromJson(reader, type);
-    }
 }

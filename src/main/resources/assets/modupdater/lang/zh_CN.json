@@ -10,12 +10,11 @@
   "window.autoUpdate": "启动时自动更新Mods",
   "window.updateOptionalMods": "更新可选mods",
   "popup.title.message": "提示",
-  "popup.title.confirm": "确定",
-  "popup.modsFolderDoesNotExist": "Mods文件夹不存在！检查modupdater_client_config.json是否设置错误。",
-  "log.receivingModList": "获取远端mod列表...",
-  "log.alreadyExists": "%s 已存在且与服务端不同，开始重新下载",
-  "log.startDownload": "开始下载 %s",
-  "log.startDownloadOptional": "开始下载可选Mod %s",
-  "log.delete": "删除 %s",
-  "log.updateComplete": "Mod更新完毕!"
+  "status.receivingModList": "获取远端mod列表...",
+  "status.completeReceivingModList": "远端列表获取完毕!",
+  "status.updateComplete": "Mod更新完毕!",
+  "operation.download": "下载操作：",
+  "operation.delete": "删除操作：",
+  "error.receivingModList": "抓取Mod列表时发生错误：",
+  "error.downloadingMod": "下载Mod时发生错误："
 }

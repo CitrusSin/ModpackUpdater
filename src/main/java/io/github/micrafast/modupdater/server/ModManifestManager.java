@@ -12,6 +12,7 @@ import static java.nio.file.StandardWatchEventKinds.*;
 
 public class ModManifestManager {
     private static final long MOD_UPDATE_INTERVAL = 1200000;
+    private static final long WATCH_SERVICE_DELAY = 1000;
 
     private final Log log = LogFactory.getLog(getClass());
 

@@ -56,6 +56,11 @@ public class ModManifest {
                 return mod;
             }
         }
+        for (Mod mod : optionalMods) {
+            if (mod.getMD5HexString().equalsIgnoreCase(md5)) {
+                return mod;
+            }
+        }
         return null;
     }
 
