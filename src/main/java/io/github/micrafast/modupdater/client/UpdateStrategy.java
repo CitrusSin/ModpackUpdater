@@ -4,6 +4,8 @@ import io.github.micrafast.modupdater.Mod;
 import io.github.micrafast.modupdater.ModManifest;
 import io.github.micrafast.modupdater.Utils;
 import io.github.micrafast.modupdater.network.NetworkUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -11,11 +13,28 @@ import java.util.*;
 
 public class UpdateStrategy {
     public final ModManifest remoteManifest;
-    public final List<Mod> localMods;
 
-    public final Map<Mod, Boolean> installMods = new HashMap<>();
-    public final Map<Mod, Boolean> optionalMods = new HashMap<>();
-    public final Map<Mod, Boolean> removeMods = new HashMap<>();
+    public Map<Mod, Boolean> getInstallMods() {
+        return installMods;
+    }
+
+    public Map<Mod, Boolean> getOptionalMods() {
+        return optionalMods;
+    }
+
+    public Map<Mod, Boolean> getRemoveMods() {
+        return removeMods;
+    }
+
+    public boolean isRunning() {
+        return (queueListener != null) && (queueListener.isAlive());
+    }
+
+    private Map<Mod, Boolean> installMods = new HashMap<>();
+    private Map<Mod, Boolean> optionalMods = new HashMap<>();
+    private Map<Mod, Boolean> removeMods = new HashMap<>();
+
+    private final Log log = LogFactory.getLog(getClass());
 
     public final List<Thread> downloadings;
     public final Queue<Thread> queue = new LinkedList<>();
@@ -27,17 +46,23 @@ public class UpdateStrategy {
 
     public UpdateStrategy(ModManifest remoteManifest, File modsFolder, int maxThreadCount) {
         this.remoteManifest = remoteManifest;
-        this.localMods = Mod.getModList(modsFolder);
+        if (!modsFolder.exists()) {
+            boolean result = modsFolder.mkdirs();
+            if (!result) {
+                log.error("mkdir failed");
+            }
+        }
         this.modsFolder = modsFolder;
         this.maxThreadCount = maxThreadCount;
         downloadings = new ArrayList<>();
-        if (!modsFolder.exists()) {
-            modsFolder.mkdirs();
-        }
         this.calculateDifferences();
     }
 
     public void calculateDifferences() {
+        List<Mod> localMods = Mod.getModList(modsFolder);
+        installMods.clear();
+        optionalMods.clear();
+        removeMods.clear();
         for (Mod mod : remoteManifest.commonMods) {
             if (!Utils.containsMod(localMods, mod)) {
                 installMods.put(mod, true);
@@ -93,10 +118,6 @@ public class UpdateStrategy {
         queue.add(dt);
     }
 
-    public boolean isRunning() {
-        return (queueListener != null) && (queueListener.isAlive());
-    }
-
     protected void startQueueListener() {
         queueListener = new Thread(() -> {
             while (true) {
@@ -122,6 +143,7 @@ public class UpdateStrategy {
     }
 
     static class DeleteThread extends Thread {
+        public boolean result;
         final File file;
 
         public DeleteThread(File file) {
@@ -130,7 +152,7 @@ public class UpdateStrategy {
 
         @Override
         public void run() {
-            file.delete();
+            result = file.delete();
         }
 
         @Override

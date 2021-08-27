@@ -77,6 +77,7 @@ public class MainController {
         window.updateButton.addActionListener(e -> startUpdateModsEDT());
         window.autoUpdateBox.addActionListener(e -> syncConfigAndSave());
         window.optionalModsList.addListSelectionListener(e -> writeModSelection());
+        window.deleteModsList.addListSelectionListener(e -> writeModSelection());
     }
 
     private void getStrategy() {
@@ -94,7 +95,7 @@ public class MainController {
             SwingUtilities.invokeAndWait(this::updateStrategy);
         } catch (Exception ex) {
             log.error(ex);
-            SwingUtilities.invokeLater(() -> popupWindow("${error.receivingModList}" + ex.getLocalizedMessage(), JOptionPane.ERROR_MESSAGE));
+            popupWindow("${error.receivingModList}" + ex.getLocalizedMessage(), JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -105,8 +106,8 @@ public class MainController {
         for (int index : optionalIndices) {
             mods.add(window.optionalModsListModel.elementAt(index));
         }
-        for (Map.Entry<Mod, Boolean> entry : strategy.optionalMods.entrySet()) {
-            strategy.optionalMods.replace(entry.getKey(), mods.contains(entry.getKey()));
+        for (Map.Entry<Mod, Boolean> entry : strategy.getOptionalMods().entrySet()) {
+            strategy.getOptionalMods().replace(entry.getKey(), mods.contains(entry.getKey()));
         }
         mods.clear();
 
@@ -114,22 +115,22 @@ public class MainController {
         for (int index : deleteIndices) {
             mods.add(window.deleteModsListModel.elementAt(index));
         }
-        for (Map.Entry<Mod, Boolean> entry : strategy.removeMods.entrySet()) {
-            strategy.removeMods.replace(entry.getKey(), mods.contains(entry.getKey()));
+        for (Map.Entry<Mod, Boolean> entry : strategy.getRemoveMods().entrySet()) {
+            strategy.getRemoveMods().replace(entry.getKey(), mods.contains(entry.getKey()));
         }
         mods.clear();
     }
 
     private void updateStrategy() {
         window.commonModsListModel.clear();
-        for (Map.Entry<Mod, Boolean> entry : strategy.installMods.entrySet()) {
+        for (Map.Entry<Mod, Boolean> entry : strategy.getInstallMods().entrySet()) {
             window.commonModsListModel.addElement(entry.getKey());
         }
         window.commonModsList.updateUI();
 
         window.optionalModsListModel.clear();
         ArrayList<Integer> selectedIndex = new ArrayList<>();
-        for (Map.Entry<Mod, Boolean> entry : strategy.optionalMods.entrySet()) {
+        for (Map.Entry<Mod, Boolean> entry : strategy.getOptionalMods().entrySet()) {
             window.optionalModsListModel.addElement(entry.getKey());
             if (entry.getValue()) {
                 selectedIndex.add(window.optionalModsListModel.indexOf(entry.getKey()));
@@ -144,7 +145,7 @@ public class MainController {
 
         selectedIndex.clear();
         window.deleteModsListModel.clear();
-        for (Map.Entry<Mod, Boolean> entry : strategy.removeMods.entrySet()) {
+        for (Map.Entry<Mod, Boolean> entry : strategy.getRemoveMods().entrySet()) {
             window.deleteModsListModel.addElement(entry.getKey());
             if (entry.getValue()) {
                 selectedIndex.add(window.deleteModsListModel.indexOf(entry.getKey()));
@@ -228,6 +229,8 @@ public class MainController {
                     });
                     Thread.sleep(50);
                 }
+                strategy.calculateDifferences();
+                SwingUtilities.invokeLater(this::updateStrategy);
             } catch (IOException e) {
                 log.error(e);
                 popupWindow("${error.downloadingMod}"+e.getLocalizedMessage(), JOptionPane.ERROR_MESSAGE);
@@ -244,9 +247,7 @@ public class MainController {
 
     public void popupWindow(String text, int type) {
         try {
-            SwingUtilities.invokeAndWait(() -> {
-                JOptionPane.showMessageDialog(window, I18nUtils.languageReplace(text), language.get("popup.title.message"), type);
-            });
+            SwingUtilities.invokeAndWait(() -> JOptionPane.showMessageDialog(window, I18nUtils.languageReplace(text), language.get("popup.title.message"), type));
         } catch (Exception e) {
             log.error(e);
         }

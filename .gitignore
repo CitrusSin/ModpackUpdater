@@ -1,5 +1,8 @@
 .gradle
 .idea
-build/
 .minecraft
+build
+clientMods
+mods
 modupdater_client_config.json
+modupdater_server_config.json

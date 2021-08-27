@@ -8,7 +8,7 @@
   "window.modsOptional": "可选Mods: ",
   "window.modsDelete": "要删除的Mods（勾选则删除）: ",
   "window.autoUpdate": "启动时自动更新Mods",
-  "window.updateOptionalMods": "更新可选mods",
+  "window.taskList": "任务列表：",
   "popup.title.message": "提示",
   "status.receivingModList": "获取远端mod列表...",
   "status.completeReceivingModList": "远端列表获取完毕!",

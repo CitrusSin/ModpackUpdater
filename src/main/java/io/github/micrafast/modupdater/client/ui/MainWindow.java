@@ -186,13 +186,13 @@ public class MainWindow extends JFrame {
         deleteConst.weightx     = 1;
         deleteConst.weighty     = 1;
 
-        centerGridBag.setConstraints(commonPanel, commonConst);
-        centerGridBag.setConstraints(optionalPanel, optionalConst);
-        centerGridBag.setConstraints(deletePanel, deleteConst);
+        centerPanel.add(commonPanel, commonConst);
+        centerPanel.add(optionalPanel, optionalConst);
+        centerPanel.add(deletePanel, deleteConst);
 
-        centerPanel.add(commonPanel);
-        centerPanel.add(optionalPanel);
-        centerPanel.add(deletePanel);
+        JPanel taskListPanel = new JPanel(new BorderLayout(3,3));
+        JLabel taskListLabel = new JLabel(language.get("window.taskList"));
+        taskListPanel.add(taskListLabel, BorderLayout.NORTH);
 
         taskListModel = new DefaultListModel<>();
         taskList = new JList<>(taskListModel);
@@ -201,6 +201,7 @@ public class MainWindow extends JFrame {
         JScrollPane taskListScroll = new JScrollPane(taskList,
                 ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED,
                 ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        taskListPanel.add(taskListScroll, BorderLayout.CENTER);
 
         GridBagConstraints taskListConst = new GridBagConstraints();
         taskListConst.fill          = GridBagConstraints.BOTH;
@@ -210,8 +211,7 @@ public class MainWindow extends JFrame {
         taskListConst.gridheight    = 3;
         taskListConst.weightx       = 1;
         taskListConst.weighty       = 1;
-        centerGridBag.setConstraints(taskListScroll, taskListConst);
-        centerPanel.add(taskListScroll);
+        centerPanel.add(taskListPanel, taskListConst);
 
         updateButton = new JButton(language.get("window.update"));
         GridBagConstraints updateButtonConst = new GridBagConstraints();
@@ -220,8 +220,7 @@ public class MainWindow extends JFrame {
         updateButtonConst.gridy         = 6;
         updateButtonConst.gridwidth     = 3;
         updateButtonConst.gridheight    = 1;
-        centerGridBag.setConstraints(updateButton, updateButtonConst);
-        centerPanel.add(updateButton);
+        centerPanel.add(updateButton, updateButtonConst);
         return centerPanel;
     }
 

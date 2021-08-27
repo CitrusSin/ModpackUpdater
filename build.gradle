@@ -4,7 +4,7 @@ plugins {
 }
 
 group 'io.github.micrafast.modupdater'
-version '1.2.000'
+version '1.2.001'
 
 sourceCompatibility = 1.8
 mainClassName = 'io.github.micrafast.modupdater.ModUpdaterMain'
@@ -28,4 +28,17 @@ jar {
     manifest {
         attributes 'Main-Class': mainClassName
     }
+}
+
+task runServer(type: Exec) {
+    dependsOn build
+    commandLine "java","-classpath", sourceSets.main.runtimeClasspath.getAsPath(), mainClassName, "--server"
+}
+
+clean.doLast {
+    file("mods").deleteDir()
+    file("clientMods").deleteDir()
+    file(".minecraft").deleteDir()
+    file("modupdater_client_config.json").delete()
+    file("modupdater_server_config.json").delete()
 }
