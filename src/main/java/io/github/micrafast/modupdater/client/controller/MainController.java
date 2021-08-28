@@ -31,7 +31,6 @@ public class MainController {
     protected Log log = LogFactory.getLog(getClass());
     MainWindow window;
     ClientConfig config;
-    Map<String, String> language;
     UpdateStrategy strategy = null;
 
     public MainController(ClientConfig config) {
@@ -45,8 +44,7 @@ public class MainController {
                 log.error("Failed setting look and feel", ex);
             }
         }
-        window = new MainWindow(I18nUtils.language);
-        language = I18nUtils.language;
+        window = new MainWindow();
         this.initialize();
     }
 
@@ -247,13 +245,13 @@ public class MainController {
 
     public void popupWindow(String text, int type) {
         try {
-            SwingUtilities.invokeAndWait(() -> JOptionPane.showMessageDialog(window, I18nUtils.languageReplace(text), language.get("popup.title.message"), type));
+            SwingUtilities.invokeAndWait(() -> JOptionPane.showMessageDialog(window, I18nUtils.localize(text), I18nUtils.getContext("popup.title.message"), type));
         } catch (Exception e) {
             log.error(e);
         }
     }
 
     protected void setStatus(String langKey) {
-        window.statusLabel.setText(language.get(langKey));
+        window.statusLabel.setText(I18nUtils.getContext(langKey));
     }
 }

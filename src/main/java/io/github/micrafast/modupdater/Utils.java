@@ -37,13 +37,4 @@ public class Utils {
         }
         return false;
     }
-
-    public static boolean containsModByFileName(List<Mod> modList, Mod mod) {
-        for (Mod m : modList) {
-            if (mod.equalsByFileName(m)) {
-                return true;
-            }
-        }
-        return false;
-    }
 }

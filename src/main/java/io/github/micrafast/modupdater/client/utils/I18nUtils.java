@@ -23,7 +23,11 @@ public class I18nUtils {
             .enableComplexMapKeySerialization()
             .create();
 
-    public static String languageReplace(String raw) {
+    public static String getContext(String langToken) {
+        return language.get(langToken);
+    }
+
+    public static String localize(String raw) {
         List<String> tokenList = new LinkedList<>();
         Matcher matcher = langTokenPattern.matcher(raw);
         while (matcher.find()) {

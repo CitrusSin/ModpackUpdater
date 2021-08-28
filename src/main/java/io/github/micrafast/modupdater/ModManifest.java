@@ -64,6 +64,20 @@ public class ModManifest {
         return null;
     }
 
+    public Mod searchFileName(String filename) {
+        for (Mod mod : commonMods) {
+            if (mod.getFileName().equalsIgnoreCase(filename)) {
+                return mod;
+            }
+        }
+        for (Mod mod : optionalMods) {
+            if (mod.getFileName().equalsIgnoreCase(filename)) {
+                return mod;
+            }
+        }
+        return null;
+    }
+
     public static ModManifest fromRemote(String url) throws IOException {
         if (url.endsWith("/")) {
             url = url.substring(0, url.length()-1);

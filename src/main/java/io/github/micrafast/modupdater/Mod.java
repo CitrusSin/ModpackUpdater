@@ -70,26 +70,15 @@ public class Mod {
         return getFileName();
     }
 
-    public boolean equalsByFileName(Mod mod2) {
-        return this.getFileName().equals(mod2.getFileName());
-    }
-
     public static List<Mod> getModList(File directory) {
         List<Mod> mods = new LinkedList<>();
         File[] files = directory.listFiles();
         for (File file : files) {
             String fileName = file.getName();
-            String suffix = fileName.substring(fileName.length()-4);
-            if (suffix.equalsIgnoreCase(".jar")) {
+            if (fileName.endsWith(".jar")) {
                 mods.add(new Mod(file));
             }
         }
         return mods;
-    }
-
-    public static Mod[] getModArray(File directory) {
-        List<Mod> mods = getModList(directory);
-        Mod[] list = new Mod[mods.size()];
-        return mods.toArray(list);
     }
 }

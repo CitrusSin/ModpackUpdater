@@ -1,6 +1,7 @@
 package io.github.micrafast.modupdater.server.handlers;
 
 import io.github.micrafast.modupdater.Mod;
+import io.github.micrafast.modupdater.cfapi.CFMLink;
 import io.github.micrafast.modupdater.server.ModManifestManager;
 import io.github.micrafast.modupdater.server.ServerConfig;
 import org.apache.commons.logging.Log;
@@ -31,21 +32,30 @@ public class ModTransferHandler implements HttpRequestHandler {
         String[] parts = request.getRequestLine().getUri().split("/");
         String md5 = parts[parts.length-1];
         Mod mod = manifestManager.getModManifest().searchMD5(md5);
-        File modFile;
-        if (mod != null) {
-            modFile = mod.localFile;
-        } else {
+        if (mod == null) {
             String fileName = URLDecoder.decode(parts[parts.length-1], "UTF-8");
-            modFile = new File(this.config.commonModsFolder, fileName);
-            if (!modFile.exists()) {
-                modFile = new File(this.config.optionalModsFolder, fileName);
+            mod = manifestManager.getModManifest().searchFileName(fileName);
+            if (mod == null) {
+                response.setStatusCode(404);
+                return;
             }
         }
-        if (!modFile.exists()) {
-            response.setStatusCode(404);
-            return;
+        if (manifestManager.hasCurseForgeLinkService()) {
+            CFMLink link = manifestManager.getCurseForge().getLink(mod);
+            if (link != null) {
+                // Redirect to CurseForge
+                response.setStatusCode(301);
+                response.setHeader("Location", link.getCurseForgeContext().getUrl());
+                return;
+            }
+        } else {
+            File modFile = mod.localFile;
+            if (!modFile.exists()) {
+                response.setStatusCode(404);
+                return;
+            }
+            response.setStatusCode(200);
+            response.setEntity(new FileEntity(modFile));
         }
-        response.setStatusCode(200);
-        response.setEntity(new FileEntity(modFile));
     }
 }

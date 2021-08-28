@@ -1,6 +1,9 @@
 package io.github.micrafast.modupdater.server;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import io.github.micrafast.modupdater.ModUpdaterMain;
+import io.github.micrafast.modupdater.Utils;
 import io.github.micrafast.modupdater.server.handlers.ModListHandler;
 import io.github.micrafast.modupdater.server.handlers.ModTransferHandler;
 import org.apache.commons.logging.Log;
@@ -14,17 +17,30 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 public class UpdaterServer {
+    public static final String CONFIG_FILE_NAME = "modupdater_server_config.json";
     private static UpdaterServer instance;
+
+    private static final Gson prettyGson = new GsonBuilder()
+            .setPrettyPrinting()
+            .create();
 
     protected final Log log = LogFactory.getLog(this.getClass());
     protected ModManifestManager manifestManager;
     HttpService service;
     ServerSocket serverSocket;
-    final ServerConfig config;
+    ServerConfig config;
 
-    public UpdaterServer(ServerConfig config) throws IOException {
-        this.config = config;
+    public UpdaterServer() throws IOException {
         instance = this;
+
+        config = new ServerConfig();
+        File serverConfigFile = new File(CONFIG_FILE_NAME);
+        if (!serverConfigFile.exists()) {
+            Utils.writeFile(serverConfigFile, "UTF-8", prettyGson.toJson(config));
+        } else {
+            config = prettyGson.fromJson(Utils.readFile(serverConfigFile,"UTF-8"), ServerConfig.class);
+        }
+
         checkConfig();
         manifestManager = new ModManifestManager(config);
     }
@@ -60,11 +76,11 @@ public class UpdaterServer {
         File folder2 = new File(this.config.optionalModsFolder);
         if (!folder.isDirectory()) {
             log.info(String.format("%s not exist, making directory...", folder.getAbsolutePath()));
-            folder.mkdir();
+            folder.mkdirs();
         }
         if (!folder2.isDirectory()) {
             log.info(String.format("%s not exist, making directory...", folder2.getAbsolutePath()));
-            folder2.mkdir();
+            folder2.mkdirs();
         }
         return true;
     }

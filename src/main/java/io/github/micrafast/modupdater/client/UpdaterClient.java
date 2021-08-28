@@ -1,5 +1,7 @@
 package io.github.micrafast.modupdater.client;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import io.github.micrafast.modupdater.ModUpdaterMain;
 import io.github.micrafast.modupdater.Utils;
 import io.github.micrafast.modupdater.client.controller.MainController;
@@ -14,6 +16,10 @@ import java.util.Locale;
 public class UpdaterClient {
     private static UpdaterClient instance;
 
+    private static final Gson prettyGson = new GsonBuilder()
+            .setPrettyPrinting()
+            .create();
+
     protected final Log log = LogFactory.getLog(getClass());
 
     ClientConfig config;
@@ -21,11 +27,23 @@ public class UpdaterClient {
 
     private File configFile;
 
-    public UpdaterClient(ClientConfig config, File configFile) {
+    public UpdaterClient() {
         instance = this;
         I18nUtils.loadLanguage(Locale.getDefault());
-        this.config = config;
-        this.configFile = configFile;
+
+        config = new ClientConfig();
+        try {
+            File clientConfigFile = new File("modupdater_client_config.json");
+            if (!clientConfigFile.exists()) {
+                Utils.writeFile(clientConfigFile, "UTF-8", prettyGson.toJson(config));
+            } else {
+                config = prettyGson.fromJson(Utils.readFile(clientConfigFile, "UTF-8"), ClientConfig.class);
+            }
+            this.configFile = clientConfigFile;
+        } catch (Exception e) {
+            log.error(e);
+        }
+
         controller = new MainController(config);
         if (config.synchronizeOnStart) {
             controller.startUpdateMods();

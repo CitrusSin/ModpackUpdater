@@ -1,6 +1,7 @@
 package io.github.micrafast.modupdater.server;
 
 import io.github.micrafast.modupdater.ModManifest;
+import io.github.micrafast.modupdater.server.curseforge.CFModManager;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -12,7 +13,6 @@ import static java.nio.file.StandardWatchEventKinds.*;
 
 public class ModManifestManager {
     private static final long MOD_UPDATE_INTERVAL = 1200000;
-    private static final long WATCH_SERVICE_DELAY = 1000;
 
     private final Log log = LogFactory.getLog(getClass());
 
@@ -21,6 +21,8 @@ public class ModManifestManager {
     protected ModManifest modManifest;
     protected Date lastUpdateDate;
     WatchService watchService;
+
+    protected CFModManager curseforge;
 
     public ModManifestManager(ServerConfig config) {
         this.config = config;
@@ -40,6 +42,14 @@ public class ModManifestManager {
             log.error(e);
         }
         update();
+        if (CFModManager.hasCFModLinks()) {
+            try {
+                log.info("CurseForge link configuration detected. Loading CurseForge redirection...");
+                curseforge = new CFModManager();
+            } catch (IOException e) {
+                log.error("Failed to load CurseForge links", e);
+            }
+        }
     }
 
     protected void update() {
@@ -56,6 +66,14 @@ public class ModManifestManager {
             }
         }
         return modManifest;
+    }
+
+    public boolean hasCurseForgeLinkService() {
+        return curseforge != null;
+    }
+
+    public CFModManager getCurseForge() {
+        return curseforge;
     }
 
     public void close() {

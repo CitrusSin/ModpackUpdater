@@ -3,13 +3,12 @@ package io.github.micrafast.modupdater.client.ui;
 import io.github.micrafast.modupdater.Mod;
 import io.github.micrafast.modupdater.client.ui.controls.ObjectCheck;
 import io.github.micrafast.modupdater.client.ui.controls.ThreadListRenderer;
+import io.github.micrafast.modupdater.client.utils.I18nUtils;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.Map;
 
 public class MainWindow extends JFrame {
-    final Map<String, String> language;
 
     public JTextField addressField;
     public JTextField modsField;
@@ -26,14 +25,13 @@ public class MainWindow extends JFrame {
     public DefaultListModel<Mod> deleteModsListModel;
     public DefaultListModel<Thread> taskListModel;
 
-    public MainWindow(Map<String, String> language) {
-        this.language = language;
+    public MainWindow() {
         this.construct();
     }
 
     // RT, this method is to construct the UI layout
     protected void construct() {
-        this.setTitle(language.get("window.title"));
+        this.setTitle(I18nUtils.getContext("window.title"));
         this.setSize(800, 850);
         this.setLocationRelativeTo(null);
 
@@ -88,9 +86,9 @@ public class MainWindow extends JFrame {
         addressField.setMaximumSize(new Dimension(300,40));
         modsField.setMaximumSize(new Dimension(300,40));
 
-        JLabel  addressLabel    = new JLabel(language.get("window.address")),
-                modsLabel       = new JLabel(language.get("window.mods"));
-        refreshListButton = new JButton(language.get("window.refreshList"));
+        JLabel  addressLabel    = new JLabel(I18nUtils.getContext("window.address")),
+                modsLabel       = new JLabel(I18nUtils.getContext("window.mods"));
+        refreshListButton = new JButton(I18nUtils.getContext("window.refreshList"));
         subGrid1.add(BorderLayout.WEST,     addressLabel);
         subGrid1.add(BorderLayout.CENTER,   addressField);
         subGrid2.add(BorderLayout.WEST,     modsLabel);
@@ -100,7 +98,7 @@ public class MainWindow extends JFrame {
         upperPanel.add(grid);
         upperPanel.add(refreshListButton);
 
-        autoUpdateBox = new JCheckBox(language.get("window.autoUpdate"));
+        autoUpdateBox = new JCheckBox(I18nUtils.getContext("window.autoUpdate"));
         upperPanel.add(autoUpdateBox);
         return upperPanel;
     }
@@ -148,9 +146,9 @@ public class MainWindow extends JFrame {
         JScrollPane commonScroll = new JScrollPane(commonModsList),
                 optionalScroll = new JScrollPane(optionalModsList),
                 deleteScroll = new JScrollPane(deleteModsList);
-        JLabel  commonLabel = new JLabel(language.get("window.modsCommon")),
-                optionalLabel = new JLabel(language.get("window.modsOptional")),
-                deleteLabel = new JLabel(language.get("window.modsDelete"));
+        JLabel  commonLabel = new JLabel(I18nUtils.getContext("window.modsCommon")),
+                optionalLabel = new JLabel(I18nUtils.getContext("window.modsOptional")),
+                deleteLabel = new JLabel(I18nUtils.getContext("window.modsDelete"));
         commonPanel.add(commonLabel, BorderLayout.NORTH);
         commonPanel.add(commonScroll, BorderLayout.CENTER);
         optionalPanel.add(optionalLabel, BorderLayout.NORTH);
@@ -191,7 +189,7 @@ public class MainWindow extends JFrame {
         centerPanel.add(deletePanel, deleteConst);
 
         JPanel taskListPanel = new JPanel(new BorderLayout(3,3));
-        JLabel taskListLabel = new JLabel(language.get("window.taskList"));
+        JLabel taskListLabel = new JLabel(I18nUtils.getContext("window.taskList"));
         taskListPanel.add(taskListLabel, BorderLayout.NORTH);
 
         taskListModel = new DefaultListModel<>();
@@ -213,7 +211,7 @@ public class MainWindow extends JFrame {
         taskListConst.weighty       = 1;
         centerPanel.add(taskListPanel, taskListConst);
 
-        updateButton = new JButton(language.get("window.update"));
+        updateButton = new JButton(I18nUtils.getContext("window.update"));
         GridBagConstraints updateButtonConst = new GridBagConstraints();
         updateButtonConst.fill          = GridBagConstraints.BOTH;
         updateButtonConst.gridx         = 0;
