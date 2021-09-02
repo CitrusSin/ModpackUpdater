@@ -36,10 +36,7 @@ and create a link file called ``modupdater_server_curseforge_modlinks.json`` whi
   {
     "localMod": {
       "md5": "bd7bd8bbcc8bf69339766b3b5951b42c",
-      "fileName": "jei-1.16.5-7.6.3.81.jar",
-      "localFile": {
-        "path": ".\\mods\\jei-1.16.5-7.6.3.81.jar"
-      }
+      "fileName": "jei-1.16.5-7.6.3.81.jar"
     },
     "curseForgeContext": {
       "projectID": 238222,
@@ -51,10 +48,7 @@ and create a link file called ``modupdater_server_curseforge_modlinks.json`` whi
   {
     "localMod": {
       "md5": "e892a46e806a6fcf945bfe4999665b53",
-      "fileName": "Ding-1.16.5-1.3.0.jar",
-      "localFile": {
-        "path": ".\\mods\\Ding-1.16.5-1.3.0.jar"
-      }
+      "fileName": "Ding-1.16.5-1.3.0.jar"
     },
     "curseForgeContext": {
       "projectID": 231275,

@@ -11,7 +11,7 @@ import java.io.IOException;
 
 public class ModUpdaterMain {
     public static final String SERVICE_NAME = "ModpackUpdateService";
-    public static final String SERVICE_VER  = "1.3.000-p-01";
+    public static final String SERVICE_VER  = "1.3.000-p-02";
 
     public static final Gson prettyGson = new GsonBuilder()
             .setPrettyPrinting()
@@ -41,6 +41,7 @@ public class ModUpdaterMain {
                 File manifestFile = new File(configManifestFilename);
                 CurseForgeConfigurator configurator = new CurseForgeConfigurator(manifestFile);
                 configurator.initializeNewLink();
+                System.exit(0);
             } catch (IOException e) {
                 e.printStackTrace();
             }

@@ -9,6 +9,7 @@ import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.util.EntityUtils;
 
 import java.io.File;
@@ -18,7 +19,14 @@ import java.io.OutputStream;
 
 public class NetworkUtils {
     private static final Log log = LogFactory.getLog(NetworkUtils.class);
-    static CloseableHttpClient httpClient = HttpClients.createDefault();
+    static CloseableHttpClient httpClient;
+
+    static {
+        PoolingHttpClientConnectionManager poolMan = new PoolingHttpClientConnectionManager();
+        poolMan.setMaxTotal(200);
+        poolMan.setDefaultMaxPerRoute(50);
+        httpClient = HttpClients.custom().setConnectionManager(poolMan).build();
+    }
 
     public static String getString(String url) throws IOException {
         HttpGet get = new HttpGet(url);

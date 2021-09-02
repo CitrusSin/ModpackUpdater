@@ -15,6 +15,7 @@ public class CurseForgeMod {
     @Expose
     public boolean required;
 
+    @Expose
     String url;
 
     public CFMLink download(File dir) throws IOException {
