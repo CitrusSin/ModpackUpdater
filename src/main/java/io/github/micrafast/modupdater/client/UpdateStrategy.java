@@ -3,13 +3,18 @@ package io.github.micrafast.modupdater.client;
 import io.github.micrafast.modupdater.Mod;
 import io.github.micrafast.modupdater.ModManifest;
 import io.github.micrafast.modupdater.Utils;
+import io.github.micrafast.modupdater.async.AsyncTaskQueueRunner;
+import io.github.micrafast.modupdater.async.AsyncTaskQueueRunnerBuilder;
+import io.github.micrafast.modupdater.async.Task;
 import io.github.micrafast.modupdater.network.NetworkUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class UpdateStrategy {
     public final ModManifest remoteManifest;
@@ -36,8 +41,8 @@ public class UpdateStrategy {
 
     private final Log log = LogFactory.getLog(getClass());
 
-    public final List<Thread> downloadings;
-    public final Queue<Thread> queue = new LinkedList<>();
+    //public final List<Thread> downloadings;
+    //public final Queue<Thread> queue = new LinkedList<>();
 
     final File modsFolder;
     final int maxThreadCount;
@@ -54,7 +59,7 @@ public class UpdateStrategy {
         }
         this.modsFolder = modsFolder;
         this.maxThreadCount = maxThreadCount;
-        downloadings = new ArrayList<>();
+        //downloadings = new ArrayList<>();
         this.calculateDifferences();
     }
 
@@ -83,39 +88,43 @@ public class UpdateStrategy {
         }
     }
 
-    public void startExecuteStrategy() {
+    public AsyncTaskQueueRunner<Task<String,? extends Exception>, String, Exception> getTaskRunner() {
+        AsyncTaskQueueRunnerBuilder<Task<String,? extends Exception>,String,Exception> builder = new AsyncTaskQueueRunnerBuilder<>();
         for (Map.Entry<Mod, Boolean> entry : removeMods.entrySet()) {
             if (entry.getValue()) {
-                addQueue(new DeleteThread(entry.getKey().localFile));
+                builder.addTask(new DeleteThread(entry.getKey().localFile));
+                //addQueue(new DeleteThread(entry.getKey().localFile));
             }
         }
         for (Map.Entry<Mod, Boolean> entry : installMods.entrySet()) {
             if (entry.getValue()) {
                 Mod mod = entry.getKey();
-                addDownloadQueue(mod, new File(modsFolder, mod.getFileName()));
+                addDownloadQueue(builder, mod, new File(modsFolder, mod.getFileName()));
             }
         }
         for (Map.Entry<Mod, Boolean> entry : optionalMods.entrySet()) {
             if (entry.getValue()) {
                 Mod mod = entry.getKey();
-                addDownloadQueue(mod, new File(modsFolder, mod.getFileName()));
+                addDownloadQueue(builder, mod, new File(modsFolder, mod.getFileName()));
             }
         }
-        startQueueListener();
+        return builder.build();
     }
 
-    protected void addQueue(Thread t) {
-        queue.add(t);
-    }
 
-    protected void addDownloadQueue(Mod mod, File file) {
+    protected void addDownloadQueue(AsyncTaskQueueRunnerBuilder<Task<String, ? extends Exception>,?,?> builder, Mod mod, File file) {
         String url = remoteManifest.getRemoteUrl();
         if (url.endsWith("/")) {
             url = url.substring(0, url.length()-1);
         }
         String dURL = url + "/mods/downloads/";
         DownloadThread dt = new DownloadThread(dURL + mod.getMD5HexString(), file);
-        queue.add(dt);
+        builder.addTask(dt);
+    }
+
+    /*
+    protected void addQueue(Thread t) {
+        queue.add(t);
     }
 
     protected void startQueueListener() {
@@ -141,8 +150,9 @@ public class UpdateStrategy {
         });
         queueListener.start();
     }
+    */
 
-    static class DeleteThread extends Thread {
+    static class DeleteThread extends Task<String, Exception> {
         public boolean result;
         final File file;
 
@@ -151,7 +161,7 @@ public class UpdateStrategy {
         }
 
         @Override
-        public void run() {
+        public void execute() throws Exception {
             result = file.delete();
         }
 
@@ -161,9 +171,7 @@ public class UpdateStrategy {
         }
     }
 
-    static class DownloadThread extends Thread {
-        public IOException exception;
-
+    static class DownloadThread extends Task<String, IOException> {
         String url;
         File file;
 
@@ -173,12 +181,10 @@ public class UpdateStrategy {
         }
 
         @Override
-        public void run() {
-            try {
-                NetworkUtils.download(url, file);
-            } catch (IOException e) {
-                this.exception = e;
-            }
+        protected void execute() throws IOException {
+            this.setProgress("Downloading");
+            NetworkUtils.download(url, file);
+            this.setProgress("Completed");
         }
 
         @Override

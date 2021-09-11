@@ -2,6 +2,8 @@ package io.github.micrafast.modupdater.client.controller;
 
 import io.github.micrafast.modupdater.Mod;
 import io.github.micrafast.modupdater.ModManifest;
+import io.github.micrafast.modupdater.async.AsyncTaskQueueRunner;
+import io.github.micrafast.modupdater.async.Task;
 import io.github.micrafast.modupdater.client.ClientConfig;
 import io.github.micrafast.modupdater.client.UpdateStrategy;
 import io.github.micrafast.modupdater.client.UpdaterClient;
@@ -216,13 +218,17 @@ public class MainController {
                     getStrategy();
                 }
                 client.saveConfig(config);
-                strategy.startExecuteStrategy();
+                AsyncTaskQueueRunner<Task<String, ? extends Exception>, String, Exception> tasksRunner = strategy.getTaskRunner();
+                tasksRunner.asyncRunTaskQueue();
                 while (strategy.isRunning()) {
                     SwingUtilities.invokeAndWait(() -> {
                         window.taskListModel.clear();
+                        tasksRunner.forEachRunning(window.taskListModel::addElement);
+                        /*
                         for (Thread t : strategy.downloadings) {
                             window.taskListModel.addElement(t);
                         }
+                        */
                         window.taskList.updateUI();
                     });
                     Thread.sleep(50);
