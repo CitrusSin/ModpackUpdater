@@ -3,13 +3,13 @@ package io.github.micrafast.modupdater.client.controller;
 import io.github.micrafast.modupdater.Mod;
 import io.github.micrafast.modupdater.ModManifest;
 import io.github.micrafast.modupdater.async.AsyncTaskQueueRunner;
-import io.github.micrafast.modupdater.async.Task;
 import io.github.micrafast.modupdater.client.ClientConfig;
 import io.github.micrafast.modupdater.client.UpdateStrategy;
 import io.github.micrafast.modupdater.client.UpdaterClient;
 import io.github.micrafast.modupdater.client.ui.MainWindow;
 import io.github.micrafast.modupdater.client.utils.I18nUtils;
 import io.github.micrafast.modupdater.network.NetworkUtils;
+import io.github.micrafast.modupdater.network.TaskFileOperation;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -218,9 +218,9 @@ public class MainController {
                     getStrategy();
                 }
                 client.saveConfig(config);
-                AsyncTaskQueueRunner<Task<String, ? extends Exception>, String, Exception> tasksRunner = strategy.getTaskRunner();
+                AsyncTaskQueueRunner<TaskFileOperation, String, IOException> tasksRunner = strategy.getTaskRunner();
                 tasksRunner.asyncRunTaskQueue();
-                while (strategy.isRunning()) {
+                while (tasksRunner.running()) {
                     SwingUtilities.invokeAndWait(() -> {
                         window.taskListModel.clear();
                         tasksRunner.forEachRunning(window.taskListModel::addElement);
@@ -231,7 +231,7 @@ public class MainController {
                         */
                         window.taskList.updateUI();
                     });
-                    Thread.sleep(50);
+                    Thread.sleep(100);
                 }
                 strategy.calculateDifferences();
                 SwingUtilities.invokeLater(this::updateStrategy);

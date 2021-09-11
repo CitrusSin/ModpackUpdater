@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
@@ -18,11 +19,11 @@ public class AsyncTaskQueueRunner<T extends Task<? extends P,? extends E>, P, E 
     private final int watchDelayMillis;
 
     public AsyncTaskQueueRunner() {
-        this(10, 50);
+        this(10, 10);
     }
 
     public AsyncTaskQueueRunner(Queue<T> waitingTasksQueue) {
-        this(10,50, waitingTasksQueue);
+        this(10,10, waitingTasksQueue);
     }
 
     public AsyncTaskQueueRunner(int maxThreadCount, int watchDelayMillis) {
@@ -59,13 +60,19 @@ public class AsyncTaskQueueRunner<T extends Task<? extends P,? extends E>, P, E 
         runningTasksSet.forEach(consumer);
     }
 
-    public synchronized void forEachExceptionOccurred(BiConsumer<? super T, ? super E> consumer) {
+    public synchronized void forEachExceptionThrown(BiConsumer<? super T, ? super E> consumer) {
         for (T task : finishedTasksSet) {
             if (task.hasRunIntoException()) {
                 E exception = task.getException();
                 consumer.accept(task, exception);
             }
         }
+    }
+
+    public boolean hasExceptionThrown() {
+        AtomicBoolean bool = new AtomicBoolean(false);
+        this.forEachExceptionThrown((t, e) -> bool.set(true));
+        return bool.get();
     }
 
     public synchronized boolean addTask(T task) {
@@ -87,7 +94,7 @@ public class AsyncTaskQueueRunner<T extends Task<? extends P,? extends E>, P, E 
             synchronized (this) {
                 this.isRunning = true;
                 watchThread = new WatchThread();
-                watchThread.run();
+                watchThread.start();
             }
         }
     }
@@ -101,11 +108,12 @@ public class AsyncTaskQueueRunner<T extends Task<? extends P,? extends E>, P, E 
     }
 
     protected void runTaskQueue() {
-        while (!this.hasRemainingTasks()) {
+        this.isRunning = true;
+        while (this.hasRemainingTasks()) {
             synchronized (this) {
                 while (runningTasksSet.size() < maxThreadCount && (!waitingTasksQueue.isEmpty())) {
                     T task = waitingTasksQueue.poll();
-                    task.start();
+                    task.startExecute();
                     runningTasksSet.add(task);
                 }
                 runningTasksSet.removeIf(task -> (!task.isAlive()) || (task.completed()));

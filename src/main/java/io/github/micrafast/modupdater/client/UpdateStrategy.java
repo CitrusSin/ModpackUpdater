@@ -5,8 +5,9 @@ import io.github.micrafast.modupdater.ModManifest;
 import io.github.micrafast.modupdater.Utils;
 import io.github.micrafast.modupdater.async.AsyncTaskQueueRunner;
 import io.github.micrafast.modupdater.async.AsyncTaskQueueRunnerBuilder;
-import io.github.micrafast.modupdater.async.Task;
-import io.github.micrafast.modupdater.network.NetworkUtils;
+import io.github.micrafast.modupdater.network.TaskDelete;
+import io.github.micrafast.modupdater.network.TaskDownload;
+import io.github.micrafast.modupdater.network.TaskFileOperation;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -31,10 +32,6 @@ public class UpdateStrategy {
         return removeMods;
     }
 
-    public boolean isRunning() {
-        return (queueListener != null) && (queueListener.isAlive());
-    }
-
     private Map<Mod, Boolean> installMods = new HashMap<>();
     private Map<Mod, Boolean> optionalMods = new HashMap<>();
     private Map<Mod, Boolean> removeMods = new HashMap<>();
@@ -47,7 +44,7 @@ public class UpdateStrategy {
     final File modsFolder;
     final int maxThreadCount;
 
-    Thread queueListener;
+    //Thread queueListener;
 
     public UpdateStrategy(ModManifest remoteManifest, File modsFolder, int maxThreadCount) {
         this.remoteManifest = remoteManifest;
@@ -88,11 +85,11 @@ public class UpdateStrategy {
         }
     }
 
-    public AsyncTaskQueueRunner<Task<String,? extends Exception>, String, Exception> getTaskRunner() {
-        AsyncTaskQueueRunnerBuilder<Task<String,? extends Exception>,String,Exception> builder = new AsyncTaskQueueRunnerBuilder<>();
+    public AsyncTaskQueueRunner<TaskFileOperation, String, IOException> getTaskRunner() {
+        AsyncTaskQueueRunnerBuilder<TaskFileOperation, String, IOException> builder = new AsyncTaskQueueRunnerBuilder<>();
         for (Map.Entry<Mod, Boolean> entry : removeMods.entrySet()) {
             if (entry.getValue()) {
-                builder.addTask(new DeleteThread(entry.getKey().localFile));
+                builder.addTask(new TaskDelete(entry.getKey().localFile));
                 //addQueue(new DeleteThread(entry.getKey().localFile));
             }
         }
@@ -112,13 +109,13 @@ public class UpdateStrategy {
     }
 
 
-    protected void addDownloadQueue(AsyncTaskQueueRunnerBuilder<Task<String, ? extends Exception>,?,?> builder, Mod mod, File file) {
+    protected void addDownloadQueue(AsyncTaskQueueRunnerBuilder<TaskFileOperation, String, IOException> builder, Mod mod, File file) {
         String url = remoteManifest.getRemoteUrl();
         if (url.endsWith("/")) {
             url = url.substring(0, url.length()-1);
         }
         String dURL = url + "/mods/downloads/";
-        DownloadThread dt = new DownloadThread(dURL + mod.getMD5HexString(), file);
+        TaskDownload dt = new TaskDownload(dURL + mod.getMD5HexString(), file);
         builder.addTask(dt);
     }
 
@@ -151,45 +148,4 @@ public class UpdateStrategy {
         queueListener.start();
     }
     */
-
-    static class DeleteThread extends Task<String, Exception> {
-        public boolean result;
-        final File file;
-
-        public DeleteThread(File file) {
-            this.file = file;
-        }
-
-        @Override
-        public void execute() throws Exception {
-            result = file.delete();
-        }
-
-        @Override
-        public String toString() {
-            return "${operation.delete} " + this.file.getName();
-        }
-    }
-
-    static class DownloadThread extends Task<String, IOException> {
-        String url;
-        File file;
-
-        public DownloadThread(String url, File file) {
-            this.url = url;
-            this.file = file;
-        }
-
-        @Override
-        protected void execute() throws IOException {
-            this.setProgress("Downloading");
-            NetworkUtils.download(url, file);
-            this.setProgress("Completed");
-        }
-
-        @Override
-        public String toString() {
-            return "${operation.download} " + this.file.getName();
-        }
-    }
 }
