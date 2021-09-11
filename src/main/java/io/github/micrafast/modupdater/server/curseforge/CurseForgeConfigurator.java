@@ -5,6 +5,9 @@ import com.google.gson.GsonBuilder;
 import io.github.micrafast.modupdater.Mod;
 import io.github.micrafast.modupdater.ModManifest;
 import io.github.micrafast.modupdater.Utils;
+import io.github.micrafast.modupdater.async.AsyncTaskQueueRunner;
+import io.github.micrafast.modupdater.async.AsyncTaskQueueRunnerBuilder;
+import io.github.micrafast.modupdater.async.Task;
 import io.github.micrafast.modupdater.cfapi.CFMLink;
 import io.github.micrafast.modupdater.cfapi.CurseForgeManifest;
 import io.github.micrafast.modupdater.cfapi.CurseForgeMod;
@@ -15,7 +18,8 @@ import org.apache.commons.logging.LogFactory;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class CurseForgeConfigurator {
     private CurseForgeManifest manifest;
@@ -80,16 +84,17 @@ public class CurseForgeConfigurator {
     }
 
     public void initializeNewLink(){
-        Queue<DownloadThread> downloadWaitings = new LinkedList<>();
-        Set<DownloadThread> downloadings = new HashSet<>();
+        //Queue<DownloadThread> downloadWaitings = new LinkedList<>();
+        //Set<DownloadThread> downloadings = new HashSet<>();
+        AsyncTaskQueueRunnerBuilder<TaskDLCFMod, String, IOException> tasksRunnerBuilder = new AsyncTaskQueueRunnerBuilder<>();
         ModManifest localManifest = new ModManifest(serverConfig.commonModsFolder, serverConfig.optionalModsFolder);
         List<CFMLink> links = new ArrayList<>(manifest.files.size());
         File modsFolder = new File(serverConfig.commonModsFolder);
         for (CurseForgeMod mod : manifest.files) {
             try {
                 if (localManifest.searchFileName(mod.getName()) == null) {
-                    DownloadThread dt = new DownloadThread(links, mod, modsFolder);
-                    downloadWaitings.add(dt);
+                    TaskDLCFMod dt = new TaskDLCFMod(links, mod, modsFolder);
+                    tasksRunnerBuilder.addTask(dt);
                 } else {
                     log.info(String.format("%s already exists, set up link.", mod.getName()));
                     Mod mod2 = localManifest.searchFileName(mod.getName());
@@ -100,6 +105,7 @@ public class CurseForgeConfigurator {
             }
         }
 
+        /*
         int downloadTotal = downloadWaitings.size();
         log.info("Downloading, please wait...");
         while ((downloadWaitings.size() > 0) || (downloadings.size() > 0)) {
@@ -126,6 +132,19 @@ public class CurseForgeConfigurator {
                 return;
             }
         }
+        */
+
+        AsyncTaskQueueRunner<TaskDLCFMod, String, IOException> tasksRunner = tasksRunnerBuilder.build();
+        // Add callbacks to display download information on screen
+        tasksRunner.addWatchCallback((tr) -> outputProgress((int)tr.getPercent()));
+        tasksRunner.addExceptionCallback((task, ex) -> {
+            System.out.print(repeatChar('\b', progressBarLen));
+            log.error("A task ran into an exception.", ex);
+            outputProgress(this.percent);
+        });
+        // Start download
+        log.info("Downloading, please wait...");
+        tasksRunner.runTaskQueueWithThreadBlock();
         System.out.println();
 
         log.info("Download complete. making link file...");
@@ -146,34 +165,23 @@ public class CurseForgeConfigurator {
         }
     }
 
-    class DownloadThread extends Thread {
+    class TaskDLCFMod extends Task<String, IOException> {
         private List<CFMLink> links;
         private CurseForgeMod cfMod;
         private File modsFolder;
 
-        private boolean completed = false;
-
-        public DownloadThread(List<CFMLink> links, CurseForgeMod cfMod, File modsFolder) {
+        public TaskDLCFMod(List<CFMLink> links, CurseForgeMod cfMod, File modsFolder) {
             this.links = links;
             this.cfMod = cfMod;
             this.modsFolder = modsFolder;
         }
 
         @Override
-        public void run() {
-            try {
-                CFMLink link = cfMod.download(modsFolder);
-                synchronized (links) {
-                    links.add(link);
-                }
-            } catch (Exception e) {
-                synchronized (log) {
-                    System.out.print(repeatChar('\b', progressBarLen));
-                    log.error("Problem occurred in downloading mod. Skipping...", e);
-                }
-                outputProgress(percent);
+        protected void execute() throws IOException {
+            CFMLink link = cfMod.download(modsFolder);
+            synchronized (links) {
+                links.add(link);
             }
-            completed = true;
         }
     }
 }

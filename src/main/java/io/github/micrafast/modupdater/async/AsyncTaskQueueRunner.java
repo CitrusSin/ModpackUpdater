@@ -1,19 +1,19 @@
 package io.github.micrafast.modupdater.async;
 
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 public class AsyncTaskQueueRunner<T extends Task<? extends P,? extends E>, P, E extends Throwable> {
     protected int maxThreadCount;
     protected final Queue<T> waitingTasksQueue;
     protected final Set<T> runningTasksSet = new HashSet<>();
     protected final Set<T> finishedTasksSet = new HashSet<>();
-    protected WatchThread watchThread;
+    protected final List<Consumer<AsyncTaskQueueRunner<T,P,E>>> watchingCallbacks = new LinkedList<>();
+    protected final List<BiConsumer<T,E>> exceptionCallbacks = new LinkedList<>();
+    protected Thread watchThread;
     protected boolean isRunning = false;
 
     private final int watchDelayMillis;
@@ -56,6 +56,30 @@ public class AsyncTaskQueueRunner<T extends Task<? extends P,? extends E>, P, E 
         return waitingTasksQueue.size() + runningTasksSet.size() + finishedTasksSet.size();
     }
 
+    public boolean addWatchCallback(Consumer<AsyncTaskQueueRunner<T,P,E>> callback) {
+        synchronized (watchingCallbacks) {
+            return watchingCallbacks.add(callback);
+        }
+    }
+
+    public void removeWatchCallbackIf(Predicate<Consumer<AsyncTaskQueueRunner<T,P,E>>> predicate) {
+        synchronized (watchingCallbacks) {
+            watchingCallbacks.removeIf(predicate);
+        }
+    }
+
+    public boolean addExceptionCallback(BiConsumer<T,E> callback) {
+        synchronized (exceptionCallbacks) {
+            return exceptionCallbacks.add(callback);
+        }
+    }
+
+    public void removeExceptionCallbackIf(Predicate<BiConsumer<T,E>> predicate) {
+        synchronized (exceptionCallbacks) {
+            exceptionCallbacks.removeIf(predicate);
+        }
+    }
+
     public synchronized void forEachRunning(Consumer<? super T> consumer) {
         runningTasksSet.forEach(consumer);
     }
@@ -80,20 +104,20 @@ public class AsyncTaskQueueRunner<T extends Task<? extends P,? extends E>, P, E 
     }
 
     public synchronized double getPercent() {
-        double totalPctValue = 0;
+        double totalPctValue = 0d;
         for (T task : runningTasksSet) {
             totalPctValue += task.getPercent();
         }
         totalPctValue += finishedTasksSet.size() * 100.0;
-        totalPctValue /= this.getTotalTasksCount();
+        totalPctValue /= (double)this.getTotalTasksCount();
         return totalPctValue;
     }
 
-    public void asyncRunTaskQueue() {
+    public void runTaskQueue() {
         if (!this.running()) {
             synchronized (this) {
                 this.isRunning = true;
-                watchThread = new WatchThread();
+                watchThread = new Thread(this::runTaskQueueWithThreadBlock);
                 watchThread.start();
             }
         }
@@ -107,7 +131,7 @@ public class AsyncTaskQueueRunner<T extends Task<? extends P,? extends E>, P, E 
         }
     }
 
-    protected void runTaskQueue() {
+    public void runTaskQueueWithThreadBlock() {
         this.isRunning = true;
         while (this.hasRemainingTasks()) {
             synchronized (this) {
@@ -116,7 +140,27 @@ public class AsyncTaskQueueRunner<T extends Task<? extends P,? extends E>, P, E 
                     task.startExecute();
                     runningTasksSet.add(task);
                 }
-                runningTasksSet.removeIf(task -> (!task.isAlive()) || (task.completed()));
+                // Clean finished tasks and crashed tasks
+                final Iterator<T> iterator = runningTasksSet.iterator();
+                while (iterator.hasNext()) {
+                    T task = iterator.next();
+                    if (task.hasRunIntoException()) {
+                        synchronized (exceptionCallbacks) {
+                            exceptionCallbacks.forEach(callback -> callback.accept(task, task.getException()));
+                        }
+                        finishedTasksSet.add(task);
+                        iterator.remove();
+                    } else if ((!task.isAlive()) || (task.completed())) {
+                        finishedTasksSet.add(task);
+                        iterator.remove();
+                    }
+                }
+                // Regularly call registered callbacks
+                synchronized (this.watchingCallbacks) {
+                    for (Consumer<AsyncTaskQueueRunner<T,P,E>> callback : watchingCallbacks) {
+                        callback.accept(this);
+                    }
+                }
             }
             try {
                 Thread.sleep(watchDelayMillis);
@@ -126,13 +170,6 @@ public class AsyncTaskQueueRunner<T extends Task<? extends P,? extends E>, P, E 
         }
         synchronized (this) {
             this.isRunning = false;
-        }
-    }
-
-    class WatchThread extends Thread {
-        @Override
-        public void run() {
-            AsyncTaskQueueRunner.this.runTaskQueue();
         }
     }
 }

@@ -219,7 +219,7 @@ public class MainController {
                 }
                 client.saveConfig(config);
                 AsyncTaskQueueRunner<TaskFileOperation, String, IOException> tasksRunner = strategy.getTaskRunner();
-                tasksRunner.asyncRunTaskQueue();
+                tasksRunner.runTaskQueue();
                 while (tasksRunner.running()) {
                     SwingUtilities.invokeAndWait(() -> {
                         window.taskListModel.clear();

@@ -11,7 +11,7 @@ import java.io.IOException;
 
 public class ModUpdaterMain {
     public static final String SERVICE_NAME = "ModpackUpdateService";
-    public static final String SERVICE_VER  = "1.3.000-p-02";
+    public static final String SERVICE_VER  = "1.3.000-p-03";
 
     public static final Gson prettyGson = new GsonBuilder()
             .setPrettyPrinting()
