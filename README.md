@@ -1,4 +1,5 @@
 # Modpack Updater
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/3fea904a0c874f7bb9222fc2eafc04c4)](https://www.codacy.com/gh/Micrafast/ModpackUpdater/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Micrafast/ModpackUpdater&amp;utm_campaign=Badge_Grade)    
 Synchronize Minecraft mods between server and client
 
 Are you fed up with players in your server asking you to add some mods?  

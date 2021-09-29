@@ -1,4 +1,5 @@
 # Mod包更新器
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/3fea904a0c874f7bb9222fc2eafc04c4)](https://www.codacy.com/gh/Micrafast/ModpackUpdater/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Micrafast/ModpackUpdater&amp;utm_campaign=Badge_Grade)  
 自动管理Minecraft服务器与客户端之间mods的同步
 
 你是不是受够了每次开个Minecraft mod服结果和蔼的玩家们一致要求加这个加那个mod  
