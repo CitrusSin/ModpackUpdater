@@ -93,6 +93,13 @@ public class AsyncTaskQueueRunner<T extends Task<? extends P>, P> {
         }
     }
 
+    public Throwable[] getExceptionsThrown() {
+        List<Throwable> list = new LinkedList<>();
+        this.forEachExceptionThrown((t, e) -> list.add(e));
+        Throwable[] array = new Throwable[list.size()];
+        return list.toArray(array);
+    }
+
     public boolean hasExceptionThrown() {
         AtomicBoolean bool = new AtomicBoolean(false);
         this.forEachExceptionThrown((t, e) -> bool.set(true));

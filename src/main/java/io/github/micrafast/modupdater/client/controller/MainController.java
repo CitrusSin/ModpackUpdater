@@ -219,21 +219,29 @@ public class MainController {
                 }
                 client.saveConfig(config);
                 AsyncTaskQueueRunner<TaskFileOperation, String> tasksRunner = strategy.getTaskRunner();
+                tasksRunner.addExceptionCallback((t, e) -> {
+                    log.error(e);
+                });
                 tasksRunner.runTaskQueue();
                 while (tasksRunner.running()) {
                     SwingUtilities.invokeAndWait(() -> {
                         window.taskListModel.clear();
                         tasksRunner.forEachRunning(window.taskListModel::addElement);
-                        /*
-                        for (Thread t : strategy.downloadings) {
-                            window.taskListModel.addElement(t);
-                        }
-                        */
                         window.taskList.updateUI();
                     });
                     Thread.sleep(100);
                 }
                 strategy.calculateDifferences();
+                Throwable[] exceptions = tasksRunner.getExceptionsThrown();
+                if (exceptions.length > 0) {
+                    StringBuilder exceptionInfoBuilder = new StringBuilder();
+                    for (Throwable exception : exceptions) {
+                        exceptionInfoBuilder.append(exception.getMessage());
+                        exceptionInfoBuilder.append('\n');
+                    }
+                    String excInfo = exceptionInfoBuilder.toString();
+                    popupWindow("${error.downloadingMod}\n" + excInfo, JOptionPane.ERROR_MESSAGE);
+                }
                 SwingUtilities.invokeLater(this::updateStrategy);
             } catch (IOException e) {
                 log.error(e);
