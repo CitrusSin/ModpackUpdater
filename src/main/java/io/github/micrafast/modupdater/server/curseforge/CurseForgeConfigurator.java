@@ -84,7 +84,7 @@ public class CurseForgeConfigurator {
     }
 
     public void initializeNewLink(){
-        AsyncTaskQueueRunnerBuilder<TaskDLCFMod, String, IOException> tasksRunnerBuilder = new AsyncTaskQueueRunnerBuilder<>();
+        AsyncTaskQueueRunnerBuilder<TaskDLCFMod, String> tasksRunnerBuilder = new AsyncTaskQueueRunnerBuilder<>();
         ModManifest localManifest = new ModManifest(serverConfig.commonModsFolder, serverConfig.optionalModsFolder);
         List<CFMLink> links = new ArrayList<>(manifest.files.size());
         File modsFolder = new File(serverConfig.commonModsFolder);
@@ -102,7 +102,7 @@ public class CurseForgeConfigurator {
                 log.error("Problem occurred in downloading mod. Skipping...", e);
             }
         }
-        AsyncTaskQueueRunner<TaskDLCFMod, String, IOException> tasksRunner = tasksRunnerBuilder.build();
+        AsyncTaskQueueRunner<TaskDLCFMod, String> tasksRunner = tasksRunnerBuilder.build();
         // Add callbacks to display download information on screen
         tasksRunner.addWatchCallback((tr) -> outputProgress((int)tr.getPercent()));
         tasksRunner.addExceptionCallback((task, ex) -> {
@@ -133,7 +133,7 @@ public class CurseForgeConfigurator {
         }
     }
 
-    class TaskDLCFMod extends Task<String, IOException> {
+    class TaskDLCFMod extends Task<String> {
         private List<CFMLink> links;
         private CurseForgeMod cfMod;
         private File modsFolder;

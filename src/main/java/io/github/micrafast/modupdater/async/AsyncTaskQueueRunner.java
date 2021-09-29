@@ -6,13 +6,13 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-public class AsyncTaskQueueRunner<T extends Task<? extends P,? extends E>, P, E extends Throwable> {
+public class AsyncTaskQueueRunner<T extends Task<? extends P>, P> {
     protected int maxThreadCount;
     protected final Queue<T> waitingTasksQueue;
     protected final Set<T> runningTasksSet = new HashSet<>();
     protected final Set<T> finishedTasksSet = new HashSet<>();
-    protected final List<Consumer<AsyncTaskQueueRunner<T,P,E>>> watchingCallbacks = new LinkedList<>();
-    protected final List<BiConsumer<T,E>> exceptionCallbacks = new LinkedList<>();
+    protected final List<Consumer<AsyncTaskQueueRunner<T,P>>> watchingCallbacks = new LinkedList<>();
+    protected final List<BiConsumer<? super T, ? super Throwable>> exceptionCallbacks = new LinkedList<>();
     protected Thread watchThread;
     protected boolean isRunning = false;
 
@@ -56,25 +56,25 @@ public class AsyncTaskQueueRunner<T extends Task<? extends P,? extends E>, P, E 
         return waitingTasksQueue.size() + runningTasksSet.size() + finishedTasksSet.size();
     }
 
-    public boolean addWatchCallback(Consumer<AsyncTaskQueueRunner<T,P,E>> callback) {
+    public boolean addWatchCallback(Consumer<AsyncTaskQueueRunner<T,P>> callback) {
         synchronized (watchingCallbacks) {
             return watchingCallbacks.add(callback);
         }
     }
 
-    public void removeWatchCallbackIf(Predicate<Consumer<AsyncTaskQueueRunner<T,P,E>>> predicate) {
+    public void removeWatchCallbackIf(Predicate<Consumer<AsyncTaskQueueRunner<T,P>>> predicate) {
         synchronized (watchingCallbacks) {
             watchingCallbacks.removeIf(predicate);
         }
     }
 
-    public boolean addExceptionCallback(BiConsumer<T,E> callback) {
+    public boolean addExceptionCallback(BiConsumer<? super T, ? super Throwable> callback) {
         synchronized (exceptionCallbacks) {
             return exceptionCallbacks.add(callback);
         }
     }
 
-    public void removeExceptionCallbackIf(Predicate<BiConsumer<T,E>> predicate) {
+    public void removeExceptionCallbackIf(Predicate<BiConsumer<? super T, ? super Throwable>> predicate) {
         synchronized (exceptionCallbacks) {
             exceptionCallbacks.removeIf(predicate);
         }
@@ -84,10 +84,10 @@ public class AsyncTaskQueueRunner<T extends Task<? extends P,? extends E>, P, E 
         runningTasksSet.forEach(consumer);
     }
 
-    public synchronized void forEachExceptionThrown(BiConsumer<? super T, ? super E> consumer) {
+    public synchronized void forEachExceptionThrown(BiConsumer<? super T, ? super Throwable> consumer) {
         for (T task : finishedTasksSet) {
             if (task.hasRunIntoException()) {
-                E exception = task.getException();
+                Throwable exception = task.getException();
                 consumer.accept(task, exception);
             }
         }
@@ -157,7 +157,7 @@ public class AsyncTaskQueueRunner<T extends Task<? extends P,? extends E>, P, E 
                 }
                 // Regularly call registered callbacks
                 synchronized (this.watchingCallbacks) {
-                    for (Consumer<AsyncTaskQueueRunner<T,P,E>> callback : watchingCallbacks) {
+                    for (Consumer<AsyncTaskQueueRunner<T,P>> callback : watchingCallbacks) {
                         callback.accept(this);
                     }
                 }

@@ -12,7 +12,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -85,8 +84,8 @@ public class UpdateStrategy {
         }
     }
 
-    public AsyncTaskQueueRunner<TaskFileOperation, String, IOException> getTaskRunner() {
-        AsyncTaskQueueRunnerBuilder<TaskFileOperation, String, IOException> builder = new AsyncTaskQueueRunnerBuilder<>();
+    public AsyncTaskQueueRunner<TaskFileOperation, String> getTaskRunner() {
+        AsyncTaskQueueRunnerBuilder<TaskFileOperation, String> builder = new AsyncTaskQueueRunnerBuilder<>();
         for (Map.Entry<Mod, Boolean> entry : removeMods.entrySet()) {
             if (entry.getValue()) {
                 builder.addTask(new TaskDelete(entry.getKey().localFile));
@@ -109,7 +108,7 @@ public class UpdateStrategy {
     }
 
 
-    protected void addDownloadQueue(AsyncTaskQueueRunnerBuilder<TaskFileOperation, String, IOException> builder, Mod mod, File file) {
+    protected void addDownloadQueue(AsyncTaskQueueRunnerBuilder<TaskFileOperation, String> builder, Mod mod, File file) {
         String url = remoteManifest.getRemoteUrl();
         if (url.endsWith("/")) {
             url = url.substring(0, url.length()-1);

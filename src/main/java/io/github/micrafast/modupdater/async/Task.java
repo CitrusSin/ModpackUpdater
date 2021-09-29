@@ -3,10 +3,10 @@ package io.github.micrafast.modupdater.async;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-public abstract class Task<P, E extends Throwable> extends Thread {
+public abstract class Task<P> extends Thread {
     private static final Log log = LogFactory.getLog(Task.class);
     private P progressValue;
-    private E exception = null;
+    private Throwable exception = null;
     private boolean hadStarted = false;
 
     public void startExecute() {
@@ -23,15 +23,11 @@ public abstract class Task<P, E extends Throwable> extends Thread {
         try {
             this.execute();
         } catch (Throwable e) {
-            try {
-                exception = (E) e;
-            } catch (ClassCastException e2) {
-                log.error(e2);
-            }
+            exception = e;
         }
     }
 
-    protected abstract void execute() throws E;
+    protected abstract void execute() throws Throwable;
     public double getPercent() {
         return (this.hadStarted && (!this.isAlive())) ? 100 : 0;
     }
@@ -47,7 +43,7 @@ public abstract class Task<P, E extends Throwable> extends Thread {
     public boolean hasRunIntoException() {
         return exception != null;
     }
-    public E getException() {
+    public Throwable getException() {
         return exception;
     }
 
