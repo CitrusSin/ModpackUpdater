@@ -84,8 +84,6 @@ public class CurseForgeConfigurator {
     }
 
     public void initializeNewLink(){
-        //Queue<DownloadThread> downloadWaitings = new LinkedList<>();
-        //Set<DownloadThread> downloadings = new HashSet<>();
         AsyncTaskQueueRunnerBuilder<TaskDLCFMod, String, IOException> tasksRunnerBuilder = new AsyncTaskQueueRunnerBuilder<>();
         ModManifest localManifest = new ModManifest(serverConfig.commonModsFolder, serverConfig.optionalModsFolder);
         List<CFMLink> links = new ArrayList<>(manifest.files.size());
@@ -104,36 +102,6 @@ public class CurseForgeConfigurator {
                 log.error("Problem occurred in downloading mod. Skipping...", e);
             }
         }
-
-        /*
-        int downloadTotal = downloadWaitings.size();
-        log.info("Downloading, please wait...");
-        while ((downloadWaitings.size() > 0) || (downloadings.size() > 0)) {
-            while (downloadings.size() < serverConfig.maxThreadCount && downloadWaitings.size() > 0) {
-                DownloadThread dt = downloadWaitings.poll();
-                if (dt != null) {
-                    dt.start();
-                    downloadings.add(dt);
-                }
-            }
-            Iterator<DownloadThread> iterator = downloadings.iterator();
-            while (iterator.hasNext()) {
-                DownloadThread dt = iterator.next();
-                if (dt.completed) {
-                    dt.interrupt();
-                    iterator.remove();
-                }
-            }
-            int percent = 100 - ((downloadWaitings.size() + downloadings.size()) * 100) / downloadTotal;
-            outputProgress(percent);
-            try {
-                Thread.sleep(100);
-            } catch (InterruptedException e) {
-                return;
-            }
-        }
-        */
-
         AsyncTaskQueueRunner<TaskDLCFMod, String, IOException> tasksRunner = tasksRunnerBuilder.build();
         // Add callbacks to display download information on screen
         tasksRunner.addWatchCallback((tr) -> outputProgress((int)tr.getPercent()));

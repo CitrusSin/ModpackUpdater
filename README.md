@@ -1,5 +1,5 @@
-#  Modpack Updater
-## Synchronize Minecraft mods between server and client
+# Modpack Updater
+Synchronize Minecraft mods between server and client
 
 Are you fed up with players in your server asking you to add some mods?  
 In this case if you accept, many players actually don't know how to update their mods list.  
@@ -7,21 +7,21 @@ And if you ignore their request, they might not be so happy.
 
 All in all, I have this problem so I make this little program to solve the problem.
 
-### How to use
+## How to use
 
 This program is based on HTTP so you should open a port for this program on your server.  
 Default port is 14238.  
 
-#### Server side
+### Server side
 For server side, run this command (mods folder under working directory is required):
 ``java -jar ModpackUpdater-version.jar --server``  
 Then it would output logs and left a 
 ``modupdater_server_config.json``, 
 which is the configuration file that you can modify.  
-##### For custom sources from CurseForge
+#### For custom sources from CurseForge
 If your server don't have a strong network traffic to let your players to download mods,
 you can redirect the download source to CurseForge so that your server can have a rest on network.  
-###### Fast way to set up redirection (CurseForge Modpack only)
+##### Fast way to set up redirection (CurseForge Modpack only)
 There is a fast way to set up redirection when you have a CurseForge manifest of a Modpack.  
 Extract ``manifest.json`` to PWD and run  
 ``java -jar ModpackUpdater-version.jar --curseforgeConfigurator manifest.json``  
@@ -29,7 +29,7 @@ or
 ``java -jar ModpackUpdater-version.jar -f manifest.json``  
 And it will automatically read the manifest, download these mods from CurseForge,
 and create a link file called ``modupdater_server_curseforge_modlinks.json`` which contains redirecting infomation.
-###### Manually add source from CurseForge
+##### Manually add source from CurseForge
 ``modupdater_server_curseforge_modlinks.json`` has a format like this:  
 ````
 [
@@ -65,7 +65,7 @@ It should be ~~easy~~ very hard to configure this file by yourself.
 Well, it really does be annoying to add these mods one-by-one.  
 But I had no idea to get these mod's CurseForge ID automatically too!
 
-#### Client side
+### Client side
 For client side, just double-click the 
 ``ModpackUpdater-version.jar`` 
 file and it would left a 

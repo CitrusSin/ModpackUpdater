@@ -20,18 +20,6 @@ import java.util.Map;
 public class UpdateStrategy {
     public final ModManifest remoteManifest;
 
-    public Map<Mod, Boolean> getInstallMods() {
-        return installMods;
-    }
-
-    public Map<Mod, Boolean> getOptionalMods() {
-        return optionalMods;
-    }
-
-    public Map<Mod, Boolean> getRemoveMods() {
-        return removeMods;
-    }
-
     private Map<Mod, Boolean> installMods = new HashMap<>();
     private Map<Mod, Boolean> optionalMods = new HashMap<>();
     private Map<Mod, Boolean> removeMods = new HashMap<>();
@@ -58,6 +46,18 @@ public class UpdateStrategy {
         this.maxThreadCount = maxThreadCount;
         //downloadings = new ArrayList<>();
         this.calculateDifferences();
+    }
+
+    public Map<Mod, Boolean> getInstallMods() {
+        return installMods;
+    }
+
+    public Map<Mod, Boolean> getOptionalMods() {
+        return optionalMods;
+    }
+
+    public Map<Mod, Boolean> getRemoveMods() {
+        return removeMods;
     }
 
     public void calculateDifferences() {

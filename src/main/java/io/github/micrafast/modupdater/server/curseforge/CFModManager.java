@@ -16,7 +16,6 @@ public class CFModManager {
     private static final Gson gson = new Gson();
 
     private List<CFMLink> links;
-    private final File configFile;
 
     public static boolean hasCFModLinks() {
         return new File(DEFAULT_LINKLIST_CONFIG_FILE).exists();
@@ -27,7 +26,6 @@ public class CFModManager {
     }
 
     public CFModManager(File configFile) throws IOException {
-        this.configFile = configFile;
         String json = Utils.readFile(configFile, "UTF-8");
         Type listType = new TypeToken<List<CFMLink>>(){}.getType();
         links = gson.fromJson(json, listType);

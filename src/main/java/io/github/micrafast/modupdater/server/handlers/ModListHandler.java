@@ -1,7 +1,5 @@
 package io.github.micrafast.modupdater.server.handlers;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import io.github.micrafast.modupdater.ModManifest;
 import io.github.micrafast.modupdater.server.ServerConfig;
 import io.github.micrafast.modupdater.server.UpdaterServer;

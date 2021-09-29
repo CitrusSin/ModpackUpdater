@@ -7,22 +7,6 @@ import com.google.gson.annotations.Expose;
 import java.util.List;
 
 public class CurseForgeManifest {
-    static class MinecraftVersion {
-        static class ModLoader {
-            @Expose
-            public String id;
-
-            @Expose
-            public boolean primary;
-        }
-
-        @Expose
-        public String version;
-
-        @Expose
-        public List<ModLoader> modLoaders;
-    }
-
     @Expose
     public MinecraftVersion minecraft;
 
@@ -54,4 +38,21 @@ public class CurseForgeManifest {
     public static CurseForgeManifest fromJson(String json) {
         return gson.fromJson(json, CurseForgeManifest.class);
     }
+
+    static class MinecraftVersion {
+        static class ModLoader {
+            @Expose
+            public String id;
+
+            @Expose
+            public boolean primary;
+        }
+
+        @Expose
+        public String version;
+
+        @Expose
+        public List<ModLoader> modLoaders;
+    }
+
 }
