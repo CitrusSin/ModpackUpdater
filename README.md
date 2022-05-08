@@ -20,7 +20,7 @@ Then it would output logs and left a
 ``modupdater_server_config.json``, 
 which is the configuration file that you can modify.  
 #### For custom sources from CurseForge
-If your server don't have a strong network traffic to let your players to download mods,
+If your server don't have a strong network traffic to let your players download mods,
 you can redirect the download source to CurseForge so that your server can have a rest on network.  
 ##### Fast way to set up redirection (CurseForge Modpack only)
 There is a fast way to set up redirection when you have a CurseForge manifest of a Modpack.  
