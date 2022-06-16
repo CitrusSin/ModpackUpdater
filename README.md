@@ -61,7 +61,7 @@ and create a link file called ``modupdater_server_curseforge_modlinks.json`` whi
   ...
 ]
 ````
-It means a collection of links between local mod infomation and CurseForge ID/URL.
+It means a collection of links between local mod information and CurseForge ID/URL.
 It should be ~~easy~~ very hard to configure this file by yourself.
 Well, it really does be annoying to add these mods one-by-one.  
 But I had no idea to get these mod's CurseForge ID automatically too!
