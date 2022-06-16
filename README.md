@@ -40,4 +40,4 @@ file and it would left a
 ``modupdater_client_config.json``  
 Then the 
 ``"updateServerAddress": "http://example.com:14238"``
-should be modified to your server address with port set in ModpackUpdater server side.
+should be replaced with your server address with port set in ModpackUpdater server side.
