@@ -6,5 +6,6 @@ clientMods
 mods
 modupdater_client_config.json
 modupdater_server_config.json
-modupdater_server_curseforge_modlinks.json
+modupdater_redirection_list.json
 manifest.json
+mod.mrpack

@@ -1,7 +1,5 @@
 package io.github.citrussin.modupdater;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 import com.google.gson.reflect.TypeToken;
@@ -15,10 +13,6 @@ import java.io.IOException;
 import java.util.List;
 
 public class ModManifest {
-    private static final Gson gson = new GsonBuilder()
-            .excludeFieldsWithoutExposeAnnotation()
-            .create();
-
     @Expose
     @SerializedName("common")
     public List<Mod> commonMods;
@@ -45,7 +39,7 @@ public class ModManifest {
     }
 
     public String getJson() {
-        return gson.toJson(this);
+        return GsonManager.gsonExcludeWithoutExpose.toJson(this);
     }
 
     public boolean isRemote() {
@@ -58,12 +52,12 @@ public class ModManifest {
 
     public Mod searchMD5(String md5) {
         for (Mod mod : commonMods) {
-            if (mod.getMD5HexString().equalsIgnoreCase(md5)) {
+            if (mod.getMd5HexString().equalsIgnoreCase(md5)) {
                 return mod;
             }
         }
         for (Mod mod : optionalMods) {
-            if (mod.getMD5HexString().equalsIgnoreCase(md5)) {
+            if (mod.getMd5HexString().equalsIgnoreCase(md5)) {
                 return mod;
             }
         }
@@ -94,7 +88,7 @@ public class ModManifest {
 
     public ModProvider getProvider(Mod mod) {
         for (ModRedirection redirection : modRedirections) {
-            if (redirection.md5.equalsIgnoreCase(mod.getMD5HexString())) {
+            if (redirection.md5.equalsIgnoreCase(mod.getMd5HexString())) {
                 return redirection;
             }
         }
@@ -102,7 +96,7 @@ public class ModManifest {
     }
 
     public void loadRedirectionList(String redirectionJson) {
-        this.modRedirections = gson.fromJson(redirectionJson, new TypeToken<List<ModRedirection>>(){}.getType());
+        this.modRedirections = GsonManager.gsonExcludeWithoutExpose.fromJson(redirectionJson, new TypeToken<List<ModRedirection>>(){}.getType());
     }
 
     public static ModManifest fromRemote(String url) throws IOException {
@@ -110,7 +104,7 @@ public class ModManifest {
             url = url.substring(0, url.length()-1);
         }
         String json = NetworkUtils.getString(url + "/mods/list");
-        ModManifest manifest = gson.fromJson(json, ModManifest.class);
+        ModManifest manifest = GsonManager.gsonExcludeWithoutExpose.fromJson(json, ModManifest.class);
         manifest.remoteUrl = url;
         return manifest;
     }

@@ -1,8 +1,7 @@
 package io.github.citrussin.modupdater.server.redirection.setup.curseforge.api;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.annotations.Expose;
+import io.github.citrussin.modupdater.GsonManager;
 
 import java.util.List;
 
@@ -31,12 +30,8 @@ public class CurseforgeManifest {
     @Expose
     public List<CurseforgeMod> files;
 
-    private static final Gson gson = new GsonBuilder()
-            .excludeFieldsWithoutExposeAnnotation()
-            .create();
-
     public static CurseforgeManifest fromJson(String json) {
-        return gson.fromJson(json, CurseforgeManifest.class);
+        return GsonManager.gsonExcludeWithoutExpose.fromJson(json, CurseforgeManifest.class);
     }
 
     static class MinecraftVersion {

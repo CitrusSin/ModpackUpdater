@@ -23,8 +23,6 @@ public class ModManifestManager {
     protected Date lastUpdateDate;
     WatchService watchService;
 
-    //protected CFModManager curseforge;
-
     public ModManifestManager(ServerConfig config) {
         this.config = config;
         try {

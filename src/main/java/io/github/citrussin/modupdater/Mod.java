@@ -35,7 +35,7 @@ public class Mod{
         }
     }
 
-    public String getMD5HexString() {
+    public String getMd5HexString() {
         return md5;
     }
 
@@ -46,7 +46,7 @@ public class Mod{
     @Override
     public boolean equals(Object mod2) {
         if (mod2 instanceof Mod) {
-            return this.getMD5HexString().equalsIgnoreCase(((Mod) mod2).getMD5HexString());
+            return this.getMd5HexString().equalsIgnoreCase(((Mod) mod2).getMd5HexString());
         }
         return false;
     }

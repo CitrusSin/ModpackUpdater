@@ -40,10 +40,14 @@ public class NetworkUtils {
                 throw new IOException("Failed to create file: " + file.getAbsolutePath());
             }
         }
-        HttpGet get = new HttpGet(url);
         FileOutputStream stream = new FileOutputStream(file, false);
-        httpClient.execute(get, new DownloadResponseHandler(stream));
+        downloadToStream(stream, url);
         stream.close();
+    }
+
+    public static void downloadToStream(OutputStream stream, String url) throws IOException {
+        HttpGet get = new HttpGet(url);
+        httpClient.execute(get, new DownloadResponseHandler(stream));
     }
 
     public static void closeClient() throws IOException {

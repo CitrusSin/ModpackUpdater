@@ -21,7 +21,14 @@
 可修改的配置都在这个文件内。
 #### 自定义下载源
 服务器流量挺贵的，所以你可以把一部分或全部的mod下载重定向到其它地方。
-##### 快速配置CurseForge下载源 (仅限CurseForge整合包)
+##### 快速配置Modrinth下载源 (Modrinth整合包)
+Modrinth整合包文件的后缀名通常是".mrpack"。  
+可运行如下指令以自动下载整合包中的mod并自动配置Modrinth下载源的重定向。  
+``java -jar ModpackUpdater-version.jar --modrinthModpack=xxx.mrpack``  
+or  
+``java -jar ModpackUpdater-version.jar --mrpack=xxx.mrpack``
+##### 快速配置CurseForge下载源 (CurseForge整合包)
+API方跑路了，官方API又要key，这个功能现在应该不会起作用。也许哪天又恢复了呢，希望如此。  
 ~~如果你用现成的CurseForge整合包，配置下载源可以把下载mod，配置重定向一步到位；
 如果你已经下好了mod也没事，当mod文件夹下已经存在同名的mod时是不会下载的  
 将CurseForge压缩包内的 ``manifest.json`` 解压至工作目录并运行：  
@@ -29,10 +36,21 @@
 或者  
 ``java -jar ModpackUpdater-version.jar -f manifest.json``  
 接下来坐与放宽，程序会自动为你下载这个json内指定的所有mod，自动配置好重定向链接文件
-``modupdater_server_curseforge_modlinks.json``。~~  
-API方跑路了，官方API又要key，这个功能现在应该不会起作用。
+``modupdater_server_curseforge_modlinks.json``。~~
 ##### 手动添加下载源：
-**WIP**
+举个例子 ``modupdater_redirection_list.json``
+````json
+[
+  {
+    "md5": "bd7bd8bbcc8bf69339766b3b5951b42c",
+    "url": "https://edge.forgecdn.net/files/3272/82/jei-1.16.5-7.6.3.81.jar"
+  },
+  {
+    "md5": "e892a46e806a6fcf945bfe4999665b53",
+    "url": "https://edge.forgecdn.net/files/3222/705/Ding-1.16.5-1.3.0.jar"
+  }
+]
+````
 ### 客户端
 对于客户端, 无脑双击
 ``ModpackUpdater-version.jar`` ，它会留下这个文件

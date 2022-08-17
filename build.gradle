@@ -30,6 +30,11 @@ jar {
     }
 }
 
+task runClient(type: Exec) {
+    dependsOn build
+    commandLine "java","-classpath", sourceSets.main.runtimeClasspath.getAsPath(), mainClassName
+}
+
 task runServer(type: Exec) {
     dependsOn build
     commandLine "java","-classpath", sourceSets.main.runtimeClasspath.getAsPath(), mainClassName, "--server"
@@ -37,7 +42,12 @@ task runServer(type: Exec) {
 
 task runCFInit(type: Exec) {
     dependsOn build
-    commandLine "java","-classpath", sourceSets.main.runtimeClasspath.getAsPath(), mainClassName, "-f", "manifest.json"
+    commandLine "java","-classpath", sourceSets.main.runtimeClasspath.getAsPath(), mainClassName, "--cfConfig=manifest.json"
+}
+
+task runModrinthInit(type: Exec) {
+    dependsOn build
+    commandLine "java","-classpath", sourceSets.main.runtimeClasspath.getAsPath(), mainClassName, "--mrpack=mod.mrpack"
 }
 
 clean.doLast {
@@ -46,5 +56,5 @@ clean.doLast {
     file(".minecraft").deleteDir()
     file("modupdater_client_config.json").delete()
     file("modupdater_server_config.json").delete()
-    file("modupdater_server_curseforge_modlinks.json").delete()
+    file("modupdater_redirection_list.json").delete()
 }

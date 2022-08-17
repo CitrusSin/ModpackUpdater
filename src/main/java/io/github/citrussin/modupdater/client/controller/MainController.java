@@ -2,7 +2,7 @@ package io.github.citrussin.modupdater.client.controller;
 
 import io.github.citrussin.modupdater.Mod;
 import io.github.citrussin.modupdater.ModManifest;
-import io.github.citrussin.modupdater.async.AsyncTaskQueueRunner;
+import io.github.citrussin.modupdater.async.TaskQueue;
 import io.github.citrussin.modupdater.client.ClientConfig;
 import io.github.citrussin.modupdater.client.UpdateStrategy;
 import io.github.citrussin.modupdater.client.UpdaterClient;
@@ -218,7 +218,7 @@ public class MainController {
                     getStrategy();
                 }
                 client.saveConfig(config);
-                AsyncTaskQueueRunner<TaskFileOperation, String> tasksRunner = strategy.getTaskRunner();
+                TaskQueue<TaskFileOperation, String> tasksRunner = strategy.getTaskQueue();
                 tasksRunner.addExceptionCallback((t, e) -> {
                     log.error(e);
                 });

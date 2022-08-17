@@ -1,7 +1,6 @@
 package io.github.citrussin.modupdater.server;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import io.github.citrussin.modupdater.GsonManager;
 import io.github.citrussin.modupdater.ModUpdaterMain;
 import io.github.citrussin.modupdater.Utils;
 import io.github.citrussin.modupdater.server.handlers.ModListHandler;
@@ -20,10 +19,6 @@ public class UpdaterServer {
     public static final String CONFIG_FILE_NAME = "modupdater_server_config.json";
     private static UpdaterServer instance;
 
-    private static final Gson prettyGson = new GsonBuilder()
-            .setPrettyPrinting()
-            .create();
-
     protected final Log log = LogFactory.getLog(this.getClass());
     protected ModManifestManager manifestManager;
     HttpService service;
@@ -36,9 +31,9 @@ public class UpdaterServer {
         config = new ServerConfig();
         File serverConfigFile = new File(CONFIG_FILE_NAME);
         if (!serverConfigFile.exists()) {
-            Utils.writeFile(serverConfigFile, "UTF-8", prettyGson.toJson(config));
+            Utils.writeFile(serverConfigFile, "UTF-8", GsonManager.prettyGson.toJson(config));
         } else {
-            config = prettyGson.fromJson(Utils.readFile(serverConfigFile,"UTF-8"), ServerConfig.class);
+            config = GsonManager.prettyGson.fromJson(Utils.readFile(serverConfigFile,"UTF-8"), ServerConfig.class);
         }
 
         checkConfig();

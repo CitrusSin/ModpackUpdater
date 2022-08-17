@@ -6,31 +6,31 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-public class AsyncTaskQueueRunner<T extends Task<? extends P>, P> {
+public class TaskQueue<T extends Task<? extends P>, P> {
     protected int maxThreadCount;
     protected final Queue<T> waitingTasksQueue;
     protected final Set<T> runningTasksSet = new HashSet<>();
     protected final Set<T> finishedTasksSet = new HashSet<>();
-    protected final List<Consumer<AsyncTaskQueueRunner<T,P>>> watchingCallbacks = new LinkedList<>();
+    protected final List<Consumer<TaskQueue<T,P>>> watchingCallbacks = new LinkedList<>();
     protected final List<BiConsumer<? super T, ? super Throwable>> exceptionCallbacks = new LinkedList<>();
     protected Thread watchThread;
     protected boolean isRunning = false;
 
     private final int watchDelayMillis;
 
-    public AsyncTaskQueueRunner() {
+    public TaskQueue() {
         this(10, 10);
     }
 
-    public AsyncTaskQueueRunner(Queue<T> waitingTasksQueue) {
+    public TaskQueue(Queue<T> waitingTasksQueue) {
         this(10,10, waitingTasksQueue);
     }
 
-    public AsyncTaskQueueRunner(int maxThreadCount, int watchDelayMillis) {
+    public TaskQueue(int maxThreadCount, int watchDelayMillis) {
         this(maxThreadCount, watchDelayMillis, new LinkedList<>());
     }
 
-    public AsyncTaskQueueRunner(int maxThreadCount, int watchDelayMillis, Queue<T> waitingTasksQueue) {
+    public TaskQueue(int maxThreadCount, int watchDelayMillis, Queue<T> waitingTasksQueue) {
         this.maxThreadCount = maxThreadCount;
         this.watchDelayMillis = watchDelayMillis;
         this.waitingTasksQueue = waitingTasksQueue;
@@ -56,13 +56,13 @@ public class AsyncTaskQueueRunner<T extends Task<? extends P>, P> {
         return waitingTasksQueue.size() + runningTasksSet.size() + finishedTasksSet.size();
     }
 
-    public boolean addWatchCallback(Consumer<AsyncTaskQueueRunner<T,P>> callback) {
+    public boolean addWatchCallback(Consumer<TaskQueue<T,P>> callback) {
         synchronized (watchingCallbacks) {
             return watchingCallbacks.add(callback);
         }
     }
 
-    public void removeWatchCallbackIf(Predicate<Consumer<AsyncTaskQueueRunner<T,P>>> predicate) {
+    public void removeWatchCallbackIf(Predicate<Consumer<TaskQueue<T,P>>> predicate) {
         synchronized (watchingCallbacks) {
             watchingCallbacks.removeIf(predicate);
         }
@@ -168,7 +168,7 @@ public class AsyncTaskQueueRunner<T extends Task<? extends P>, P> {
                 }
                 // Regularly call registered callbacks
                 synchronized (this.watchingCallbacks) {
-                    for (Consumer<AsyncTaskQueueRunner<T,P>> callback : watchingCallbacks) {
+                    for (Consumer<TaskQueue<T,P>> callback : watchingCallbacks) {
                         callback.accept(this);
                     }
                 }

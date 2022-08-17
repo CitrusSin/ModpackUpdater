@@ -1,8 +1,7 @@
 package io.github.citrussin.modupdater.client.utils;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
+import io.github.citrussin.modupdater.GsonManager;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -19,9 +18,6 @@ public class I18nUtils {
     public static Map<String, String> language;
 
     private static final Pattern langTokenPattern = Pattern.compile("\\$\\{(.*?)}");
-    private static final Gson mapGson = new GsonBuilder()
-            .enableComplexMapKeySerialization()
-            .create();
 
     public static String getContext(String langToken) {
         return language.get(langToken);
@@ -67,6 +63,6 @@ public class I18nUtils {
         assert inputStream != null;
         InputStreamReader reader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
         Type type = new TypeToken<Map<String, String>>(){}.getType();
-        language = mapGson.fromJson(reader, type);
+        language = GsonManager.mapGson.fromJson(reader, type);
     }
 }

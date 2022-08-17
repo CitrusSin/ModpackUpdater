@@ -2,8 +2,8 @@ package io.github.citrussin.modupdater.client;
 
 import io.github.citrussin.modupdater.Mod;
 import io.github.citrussin.modupdater.ModManifest;
-import io.github.citrussin.modupdater.async.AsyncTaskQueueRunner;
-import io.github.citrussin.modupdater.async.AsyncTaskQueueRunnerBuilder;
+import io.github.citrussin.modupdater.async.TaskQueue;
+import io.github.citrussin.modupdater.async.TaskQueueBuilder;
 import io.github.citrussin.modupdater.network.TaskDelete;
 import io.github.citrussin.modupdater.network.TaskDownload;
 import io.github.citrussin.modupdater.network.TaskFileOperation;
@@ -24,13 +24,8 @@ public class UpdateStrategy {
 
     private final Log log = LogFactory.getLog(getClass());
 
-    //public final List<Thread> downloadings;
-    //public final Queue<Thread> queue = new LinkedList<>();
-
     final File modsFolder;
     final int maxThreadCount;
-
-    //Thread queueListener;
 
     public UpdateStrategy(ModManifest remoteManifest, File modsFolder, int maxThreadCount) {
         this.remoteManifest = remoteManifest;
@@ -42,7 +37,6 @@ public class UpdateStrategy {
         }
         this.modsFolder = modsFolder;
         this.maxThreadCount = maxThreadCount;
-        //downloadings = new ArrayList<>();
         this.calculateDifferences();
     }
 
@@ -83,8 +77,8 @@ public class UpdateStrategy {
         }
     }
 
-    public AsyncTaskQueueRunner<TaskFileOperation, String> getTaskRunner() {
-        AsyncTaskQueueRunnerBuilder<TaskFileOperation, String> builder = new AsyncTaskQueueRunnerBuilder<>();
+    public TaskQueue<TaskFileOperation, String> getTaskQueue() {
+        TaskQueueBuilder<TaskFileOperation, String> builder = new TaskQueueBuilder<>();
         for (Map.Entry<Mod, Boolean> entry : removeMods.entrySet()) {
             if (entry.getValue()) {
                 builder.addTask(new TaskDelete(entry.getKey().localFile));
@@ -107,43 +101,13 @@ public class UpdateStrategy {
     }
 
 
-    protected void addDownloadQueue(AsyncTaskQueueRunnerBuilder<TaskFileOperation, String> builder, Mod mod, File file) {
+    protected void addDownloadQueue(TaskQueueBuilder<TaskFileOperation, String> builder, Mod mod, File file) {
         String url = remoteManifest.getRemoteUrl();
         if (url.endsWith("/")) {
             url = url.substring(0, url.length()-1);
         }
         String dURL = url + "/mods/downloads/";
-        TaskDownload dt = new TaskDownload(dURL + mod.getMD5HexString(), file);
+        TaskDownload dt = new TaskDownload(dURL + mod.getMd5HexString(), file);
         builder.addTask(dt);
     }
-
-    /*
-    protected void addQueue(Thread t) {
-        queue.add(t);
-    }
-
-    protected void startQueueListener() {
-        queueListener = new Thread(() -> {
-            while (true) {
-                downloadings.removeIf(dt -> !dt.isAlive());
-                if (queue.isEmpty() && downloadings.size() == 0) {
-                    return;
-                }
-                if (downloadings.size() < maxThreadCount) {
-                    if (!queue.isEmpty()) {
-                        Thread dt = queue.poll();
-                        dt.start();
-                        downloadings.add(dt);
-                    }
-                }
-                try {
-                    Thread.sleep(5);
-                } catch (InterruptedException e) {
-                    return;
-                }
-            }
-        });
-        queueListener.start();
-    }
-    */
 }
