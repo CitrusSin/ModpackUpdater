@@ -59,3 +59,67 @@ file and it would leave a
 Then the 
 ``"updateServerAddress": "http://example.com:14238"``
 should be replaced with your server address with port set in ModpackUpdater server side.
+
+## Protocol
+HTTP Protocol, details are listed below (Assuming the server is serving at `http://example.com:14238`):
+### Requesting Mod List
+When the client refreshing mod list, it will send GET request to `http://example.com:14238/mods/list`,
+and the server will return a json such as this: 
+````json
+{
+  "common": [
+    {
+      "md5": "19601f4688469c8aab5ba3e6e0ef4e3b",
+      "fileName":"architectury-4.5.75-fabric.jar"
+    },
+    //...
+  ],
+  "optional": [
+    {
+      "md5":"d5ec2a8babd0dbf95da81a7d7f9a3d15",
+      "fileName":"iris-mc1.18.2-1.2.5.jar"
+    },
+    //...
+  ]
+}
+````
+"md5" is the MD5 value of the jar file.  
+Mods in "common" list are required to keep up with the server,
+while mods in "optional" list just literally means optional.
+### Update Mod
+After received mod list, the client will compare the local mod list with the remote one.   
+Before that, the client calculates the MD5 value of each mod, and use MD5 value as the only identification of the mod.
+So it's **unnecessary to worry that players might rename the mod file** or worry about other similar concerns.  
+After comparison, the client will show three lists of mods: 
+1. Mods force required: Doesn't exist in the local mod list but exists in the "common" remote mod list.
+2. Mods optional: Doesn't exist in the local mod list but exists in the "optional" remote mod list.
+3. Delete Mods: Exists in the local mod list but doesn't exist in the "common" remote mod list. Will be checked by default if the mod exists in the "optional" remote mod list, and vice versa.
+### Download Mod
+When player click the "Update Mods" button, the client will update mods according the mod list rules showed above.  
+Deletion are performed before downloading.  
+When downloading each mod, the client will send request to `http://example.com:14238/mods/downloads/{MD5}` 
+where `{MD5}` is the MD5 value of the mod jar file.
+*Note: `{MD5}` can be the file name of the mod jar file, and the server will respond correctly.
+But this is not recommended because it is designed to provide support to older versions before 1.2.000.*  
+If there're no redirection set for this mod, the server will respond `200 OK` and send the mod jar file, as below:
+````
+HTTP/1.1 200 OK
+Connection: Keep-Alive
+Content-Length: 15517
+Content-Type: application/java-archive
+Date: Thu, 18 Aug 2022 05:23:47 GMT
+Server: ModpackUpdateService/1.4.000
+
+[Data of the mod jar file]
+````
+If there is redirection set for this mod, the server will respond `301 Moved Permanently`
+and redirect to the download url as below:
+````
+HTTP/1.1 301 Moved Permanently
+Location: https://cdn.modrinth.com/data/hvFnDODi/versions/0.1.2/lazydfu-0.1.2.jar
+Date: Thu, 18 Aug 2022 05:37:13 GMT
+Server: ModpackUpdateService/1.4.000
+Content-Length: 0
+
+
+````
