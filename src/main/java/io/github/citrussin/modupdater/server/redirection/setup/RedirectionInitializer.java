@@ -26,7 +26,7 @@ public abstract class RedirectionInitializer {
         serverConfig = new ServerConfig();
         File serverConfigFile = new File(UpdaterServer.CONFIG_FILE_NAME);
         if (!serverConfigFile.exists()) {
-            Utils.writeFile(serverConfigFile, "UTF-8", GsonManager.prettyGsonExcludeWithoutExpose.toJson(serverConfig));
+            Utils.writeFile(serverConfigFile, "UTF-8", GsonManager.prettyGson.toJson(serverConfig));
         } else {
             serverConfig = GsonManager.prettyGsonExcludeWithoutExpose
                     .fromJson(Utils.readFile(serverConfigFile,"UTF-8"), ServerConfig.class);

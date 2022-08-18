@@ -66,6 +66,10 @@ public class UpdaterServer {
         manifestManager.close();
     }
 
+    private void saveConfig() {
+
+    }
+
     private boolean checkConfig() {
         File folder = new File(this.config.commonModsFolder);
         File folder2 = new File(this.config.optionalModsFolder);

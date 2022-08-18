@@ -6,7 +6,7 @@
   "window.mods": "Mods Folder: ",
   "window.modsCommon": "Mods force required: ",
   "window.modsOptional": "Mods optional: ",
-  "window.modsDelete": "Delete Mods (Delete when selected): ",
+  "window.modsDelete": "Delete Mods (Delete when checked): ",
   "window.autoUpdate": "Automatically update when start",
   "window.taskList": "Task list: ",
   "popup.title.message": "Message",

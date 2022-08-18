@@ -20,6 +20,7 @@ public class ModUpload implements ModProvider {
         if (localFile != null && localFile.exists()) {
             // 200 OK
             response.setStatusCode(200);
+            response.setHeader("Content-Type", "application/java-archive");
             response.setEntity(new FileEntity(localFile));
         } else {
             // 404 Not Found
