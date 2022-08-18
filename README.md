@@ -101,7 +101,7 @@ When downloading each mod, the client will send request to `http://example.com:1
 where `{MD5}` is the MD5 value of the mod jar file.
 *Note: `{MD5}` can be the file name of the mod jar file, and the server will respond correctly.
 But this is not recommended because it is designed to provide support to older versions before 1.2.000.*  
-If there're no redirection set for this mod, the server will respond `200 OK` and send the mod jar file, as below:
+If there's no redirection set for this mod, the server will respond `200 OK` and send the mod jar file, as below:
 ````
 HTTP/1.1 200 OK
 Connection: Keep-Alive
