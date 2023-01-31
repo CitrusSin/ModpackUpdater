@@ -4,7 +4,6 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
-import java.util.function.Predicate;
 
 public class TaskQueue<T extends Task<? extends P>, P> {
     protected int maxThreadCount;
@@ -16,32 +15,12 @@ public class TaskQueue<T extends Task<? extends P>, P> {
     protected Thread watchThread;
     protected boolean isRunning = false;
 
-    private final int watchDelayMillis;
-
-    public TaskQueue() {
-        this(10, 10);
-    }
-
-    public TaskQueue(Queue<T> waitingTasksQueue) {
-        this(10,10, waitingTasksQueue);
-    }
-
-    public TaskQueue(int maxThreadCount, int watchDelayMillis) {
-        this(maxThreadCount, watchDelayMillis, new LinkedList<>());
-    }
+    private final int watchDelayMs;
 
     public TaskQueue(int maxThreadCount, int watchDelayMillis, Queue<T> waitingTasksQueue) {
         this.maxThreadCount = maxThreadCount;
-        this.watchDelayMillis = watchDelayMillis;
+        this.watchDelayMs = watchDelayMillis;
         this.waitingTasksQueue = waitingTasksQueue;
-    }
-
-    public int getMaxThreadCount() {
-        return maxThreadCount;
-    }
-
-    public void setMaxThreadCount(int maxThreadCount) {
-        this.maxThreadCount = maxThreadCount;
     }
 
     public boolean running() {
@@ -56,27 +35,15 @@ public class TaskQueue<T extends Task<? extends P>, P> {
         return waitingTasksQueue.size() + runningTasksSet.size() + finishedTasksSet.size();
     }
 
-    public boolean addWatchCallback(Consumer<TaskQueue<T,P>> callback) {
+    public void addWatchCallback(Consumer<TaskQueue<T,P>> callback) {
         synchronized (watchingCallbacks) {
-            return watchingCallbacks.add(callback);
+            watchingCallbacks.add(callback);
         }
     }
 
-    public void removeWatchCallbackIf(Predicate<Consumer<TaskQueue<T,P>>> predicate) {
-        synchronized (watchingCallbacks) {
-            watchingCallbacks.removeIf(predicate);
-        }
-    }
-
-    public boolean addExceptionCallback(BiConsumer<? super T, ? super Throwable> callback) {
+    public void addExceptionCallback(BiConsumer<? super T, ? super Throwable> callback) {
         synchronized (exceptionCallbacks) {
-            return exceptionCallbacks.add(callback);
-        }
-    }
-
-    public void removeExceptionCallbackIf(Predicate<BiConsumer<? super T, ? super Throwable>> predicate) {
-        synchronized (exceptionCallbacks) {
-            exceptionCallbacks.removeIf(predicate);
+            exceptionCallbacks.add(callback);
         }
     }
 
@@ -120,7 +87,7 @@ public class TaskQueue<T extends Task<? extends P>, P> {
             totalPctValue += task.getPercent();
         }
         totalPctValue += finishedTasksSet.size() * 100.0;
-        totalPctValue /= (double)this.getTotalTasksCount();
+        totalPctValue /= this.getTotalTasksCount();
         return totalPctValue;
     }
 
@@ -128,7 +95,11 @@ public class TaskQueue<T extends Task<? extends P>, P> {
         if (!this.running()) {
             synchronized (this) {
                 this.isRunning = true;
-                watchThread = new Thread(this::runTaskQueueWithThreadBlock);
+                watchThread = new Thread(() -> {
+                    try {
+                        this.runTaskQueueWithThreadBlock();
+                    } catch (InterruptedException ignored) {}
+                });
                 watchThread.start();
             }
         }
@@ -142,7 +113,7 @@ public class TaskQueue<T extends Task<? extends P>, P> {
         }
     }
 
-    public void runTaskQueueWithThreadBlock() {
+    public void runTaskQueueWithThreadBlock() throws InterruptedException {
         this.isRunning = true;
         while (this.hasRemainingTasks()) {
             synchronized (this) {
@@ -173,11 +144,7 @@ public class TaskQueue<T extends Task<? extends P>, P> {
                     }
                 }
             }
-            try {
-                Thread.sleep(watchDelayMillis);
-            } catch (InterruptedException e) {
-                break;
-            }
+            Thread.sleep(watchDelayMs);
         }
         synchronized (this) {
             this.isRunning = false;

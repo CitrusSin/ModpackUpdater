@@ -107,7 +107,7 @@ public class UpdateStrategy {
             url = url.substring(0, url.length()-1);
         }
         String dURL = url + "/mods/downloads/";
-        TaskDownload dt = new TaskDownload(dURL + mod.getMd5HexString(), file);
+        TaskDownload dt = new TaskDownload(dURL + mod.getHashString(), file);
         builder.addTask(dt);
     }
 }

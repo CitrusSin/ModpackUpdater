@@ -26,10 +26,10 @@ public abstract class RedirectionInitializer {
         serverConfig = new ServerConfig();
         File serverConfigFile = new File(UpdaterServer.CONFIG_FILE_NAME);
         if (!serverConfigFile.exists()) {
-            Utils.writeFile(serverConfigFile, "UTF-8", GsonManager.prettyGson.toJson(serverConfig));
+            Utils.writeFile(serverConfigFile, GsonManager.prettyGson.toJson(serverConfig));
         } else {
-            serverConfig = GsonManager.prettyGsonExcludeWithoutExpose
-                    .fromJson(Utils.readFile(serverConfigFile,"UTF-8"), ServerConfig.class);
+            serverConfig = GsonManager.prettyGson
+                    .fromJson(Utils.readFile(serverConfigFile), ServerConfig.class);
         }
 
         // Create mods folder
@@ -58,15 +58,15 @@ public abstract class RedirectionInitializer {
         synchronized (log) {
             this.percent = percent;
             String progressTips = "Progress: ";
-            int aChars = percent * (progressBarLen - progressTips.length() - 5) / 100;
-            int bChars = (progressBarLen - progressTips.length() - 5) - aChars;
+            int aChars = percent * (progressBarLen - progressTips.length() - 6) / 100;
+            int bChars = (progressBarLen - progressTips.length() - 6) - aChars;
             String lastNum = percent + "%";
             System.out.print(repeatChar('\b', progressBarLen));
             String progress = progressTips +
                     '[' +
                     repeatChar('#', aChars) +
                     repeatChar(' ', bChars) +
-                    ']' +
+                    "] " +
                     lastNum;
             System.out.print(progress);
         }
@@ -87,12 +87,19 @@ public abstract class RedirectionInitializer {
         tasksRunner.addWatchCallback((tr) -> outputProgress((int)tr.getPercent()));
         tasksRunner.addExceptionCallback((task, ex) -> {
             System.out.print(repeatChar('\b', progressBarLen));
-            log.error("A task ran into an exception.", ex);
+            System.err.println("A task ran into an exception.");
+            ex.printStackTrace();
             outputProgress(this.percent);
         });
         // Download!
-        log.info("Downloading, please wait...");
-        tasksRunner.runTaskQueueWithThreadBlock();
+        System.out.println("Downloading, please wait...");
+        try {
+            tasksRunner.runTaskQueueWithThreadBlock();
+        } catch (InterruptedException e) {
+            System.out.println();
+            System.err.println("Interrupted. Exiting...");
+            return;
+        }
         System.out.println();
         // After download, finish the rest of the redirection list
         tasksRunner.forEachFinished((task) -> {
@@ -101,12 +108,13 @@ public abstract class RedirectionInitializer {
             }
         });
         // Write redirection file
-        String json = GsonManager.prettyGsonExcludeWithoutExpose.toJson(list);
+        String json = GsonManager.prettyGson.toJson(list);
         File redirectionListFile = new File(this.serverConfig.redirectionListPath);
         try {
-            Utils.writeFile(redirectionListFile, "UTF-8", json);
+            Utils.writeFile(redirectionListFile, json);
         } catch (IOException e) {
             log.error("Failed to write redirection list file " + redirectionListFile.getName(), e);
         }
+        System.out.println("Task finished. Exiting.");
     }
 }

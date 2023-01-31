@@ -20,7 +20,7 @@ public class CurseforgeRedirectionInitializer extends RedirectionInitializer {
 
     public CurseforgeRedirectionInitializer(File jsonFile) throws IOException {
         super();
-        String json = Utils.readFile(jsonFile, "UTF-8");
+        String json = Utils.readFile(jsonFile);
         manifest = CurseforgeManifest.fromJson(json);
     }
 

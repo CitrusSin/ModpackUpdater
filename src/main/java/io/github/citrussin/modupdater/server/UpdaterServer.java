@@ -31,9 +31,9 @@ public class UpdaterServer {
         config = new ServerConfig();
         File serverConfigFile = new File(CONFIG_FILE_NAME);
         if (!serverConfigFile.exists()) {
-            Utils.writeFile(serverConfigFile, "UTF-8", GsonManager.prettyGson.toJson(config));
+            Utils.writeFile(serverConfigFile, GsonManager.prettyGson.toJson(config));
         } else {
-            config = GsonManager.prettyGson.fromJson(Utils.readFile(serverConfigFile,"UTF-8"), ServerConfig.class);
+            config = GsonManager.prettyGson.fromJson(Utils.readFile(serverConfigFile), ServerConfig.class);
         }
 
         checkConfig();
@@ -64,10 +64,6 @@ public class UpdaterServer {
             t.start();
         }
         manifestManager.close();
-    }
-
-    private void saveConfig() {
-
     }
 
     private boolean checkConfig() {

@@ -23,7 +23,7 @@ public class TaskDownloadMod extends TaskDownload {
     protected void execute() throws IOException {
         super.execute();
         try {
-            this.redirection = new ModRedirection(Utils.calculateMD5(this.file), this.url);
+            this.redirection = new ModRedirection(Utils.calculateFileHash(this.file), this.url);
         } catch (NoSuchAlgorithmException e) {
             log.error("Calculate MD5 failed", e);
         }

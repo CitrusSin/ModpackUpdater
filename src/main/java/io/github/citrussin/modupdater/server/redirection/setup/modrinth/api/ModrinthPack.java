@@ -4,6 +4,7 @@ import com.google.gson.annotations.Expose;
 import io.github.citrussin.modupdater.GsonManager;
 
 import java.io.*;
+import java.nio.file.Files;
 import java.util.List;
 import java.util.Map;
 import java.util.zip.ZipEntry;
@@ -31,16 +32,15 @@ public class ModrinthPack {
     private static final String INDEX_JSON_NAME = "modrinth.index.json";
 
     public static ModrinthPack fromJson(String json) {
-        return GsonManager.mapGsonExcludeWithoutExpose.fromJson(json, ModrinthPack.class);
+        return GsonManager.mapGson.fromJson(json, ModrinthPack.class);
     }
 
     public static ModrinthPack fromReaderJson(Reader reader) {
-        return GsonManager.mapGsonExcludeWithoutExpose.fromJson(reader, ModrinthPack.class);
+        return GsonManager.mapGson.fromJson(reader, ModrinthPack.class);
     }
 
     public static ModrinthPack fromMrPack(File file) throws IOException {
         ModrinthPack pack = null;
-
         ZipInputStream zipStream = new ZipInputStream(new FileInputStream(file));
         ZipEntry entry = zipStream.getNextEntry();
         while (entry != null) {

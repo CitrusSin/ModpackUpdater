@@ -31,7 +31,7 @@ public class CurseforgeManifest {
     public List<CurseforgeMod> files;
 
     public static CurseforgeManifest fromJson(String json) {
-        return GsonManager.gsonExcludeWithoutExpose.fromJson(json, CurseforgeManifest.class);
+        return GsonManager.gson.fromJson(json, CurseforgeManifest.class);
     }
 
     static class MinecraftVersion {

@@ -37,7 +37,7 @@ public class ModrinthRedirectionInitializer extends RedirectionInitializer {
             String name = file.getName();
             TaskDownloadMod task = new TaskDownloadMod(file.downloads.get(0), new File(destinationFolder, name));
             tasksRunnerBuilder.addTask(task);
-            log.info(String.format("%s added to download task", name));
+            System.out.printf("%s added to download task%n", name);
         }
     }
 }

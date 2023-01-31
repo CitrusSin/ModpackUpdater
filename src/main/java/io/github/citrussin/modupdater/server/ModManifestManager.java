@@ -48,9 +48,9 @@ public class ModManifestManager {
         File redirectionListFile = new File(this.config.redirectionListPath);
         try {
             if (!redirectionListFile.exists()) {
-                Utils.writeFile(redirectionListFile, "UTF-8", "[]");
+                Utils.writeFile(redirectionListFile, "[]");
             }
-            modManifest.loadRedirectionList(Utils.readFile(redirectionListFile, "UTF-8"));
+            modManifest.loadRedirectionList(Utils.readFile(redirectionListFile));
         } catch (IOException e) {
             log.error("Failed to read redirection list", e);
         }

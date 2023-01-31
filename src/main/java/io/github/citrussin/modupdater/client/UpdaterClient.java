@@ -29,9 +29,9 @@ public class UpdaterClient {
         try {
             File clientConfigFile = new File("modupdater_client_config.json");
             if (!clientConfigFile.exists()) {
-                Utils.writeFile(clientConfigFile, "UTF-8", GsonManager.prettyGson.toJson(config));
+                Utils.writeFile(clientConfigFile, GsonManager.prettyGson.toJson(config));
             } else {
-                config = GsonManager.prettyGson.fromJson(Utils.readFile(clientConfigFile, "UTF-8"), ClientConfig.class);
+                config = GsonManager.prettyGson.fromJson(Utils.readFile(clientConfigFile), ClientConfig.class);
             }
             this.configFile = clientConfigFile;
         } catch (Exception e) {
@@ -46,7 +46,7 @@ public class UpdaterClient {
 
     public void saveConfig(ClientConfig config) throws IOException {
         this.config = config;
-        Utils.writeFile(configFile, "UTF-8", GsonManager.prettyGson.toJson(config));
+        Utils.writeFile(configFile, GsonManager.prettyGson.toJson(config));
     }
 
     public static UpdaterClient getInstance() {

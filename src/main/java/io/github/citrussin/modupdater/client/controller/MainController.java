@@ -23,12 +23,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-/*
- * Warning: trash code dump :(
- * Controller code is really hard to write....
- * Don't know what is MVC structure huh :(
- * But it just works as a "controller" :P
- */
 public class MainController {
     protected Log log = LogFactory.getLog(getClass());
     MainWindow window;

@@ -14,7 +14,7 @@ public class Mod{
     protected static final Log log = LogFactory.getLog(Mod.class);
 
     @Expose
-    private String md5;
+    private String hashString;
 
     @Expose
     private String fileName;
@@ -24,19 +24,19 @@ public class Mod{
     public Mod(File file) {
         fileName = file.getName();
         localFile = file;
-        calculateMD5();
+        calculateHashString();
     }
 
-    protected void calculateMD5() {
+    protected void calculateHashString() {
         try {
-            md5 = Utils.calculateMD5(localFile);
+            hashString = Utils.calculateFileHash(localFile);
         } catch (NoSuchAlgorithmException | IOException e) {
-            log.error("MD5 Calculation failed: ", e);
+            log.error("Hash calculation failed: ", e);
         }
     }
 
-    public String getMd5HexString() {
-        return md5;
+    public String getHashString() {
+        return hashString;
     }
 
     public String getFilename() {
@@ -44,11 +44,16 @@ public class Mod{
     }
 
     @Override
-    public boolean equals(Object mod2) {
-        if (mod2 instanceof Mod) {
-            return this.getMd5HexString().equalsIgnoreCase(((Mod) mod2).getMd5HexString());
+    public boolean equals(Object obj) {
+        if (obj instanceof Mod) {
+            return this.getHashString().equalsIgnoreCase(((Mod) obj).getHashString());
         }
         return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return this.getHashString().toLowerCase().hashCode();
     }
 
     @Override
@@ -59,6 +64,10 @@ public class Mod{
     public static List<Mod> getModList(File directory) {
         List<Mod> mods = new LinkedList<>();
         File[] files = directory.listFiles();
+        if (files == null) {
+            log.error("Target is not a directory!");
+            return mods;
+        }
         for (File file : files) {
             String fileName = file.getName();
             if (fileName.endsWith(".jar")) {

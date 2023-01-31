@@ -35,9 +35,6 @@ public class MainWindow extends JFrame {
         this.setSize(800, 850);
         this.setLocationRelativeTo(null);
 
-        //JPanel panel = new JPanel(new GridBagLayout());
-        //this.setContentPane(panel);
-
         GridBagLayout layout = new GridBagLayout();
         this.setLayout(layout);
 
@@ -57,8 +54,8 @@ public class MainWindow extends JFrame {
         centerPanelConst.gridy      = 2;
         centerPanelConst.gridwidth  = 1;
         centerPanelConst.gridheight = 6;
-        centerPanelConst.weightx = 1;
-        centerPanelConst.weighty = 1;
+        centerPanelConst.weightx    = 1;
+        centerPanelConst.weighty    = 1;
         this.add(centerPanel, centerPanelConst);
 
         JPanel statusBar = makeStatusBar();
@@ -108,16 +105,17 @@ public class MainWindow extends JFrame {
         GridBagLayout centerGridBag = new GridBagLayout();
         centerPanel.setLayout(centerGridBag);
 
-        JPanel  commonPanel = new JPanel(new BorderLayout(3, 3)),
-                optionalPanel = new JPanel(new BorderLayout(3, 3)),
-                deletePanel = new JPanel(new BorderLayout(3, 3));
+        JPanel  commonPanel     = new JPanel(new BorderLayout(3, 3)),
+                optionalPanel   = new JPanel(new BorderLayout(3, 3)),
+                deletePanel     = new JPanel(new BorderLayout(3, 3));
 
-        commonModsListModel = new DefaultListModel<>();
-        optionalModsListModel = new DefaultListModel<>();
-        deleteModsListModel = new DefaultListModel<>();
-        commonModsList = new JList<>(commonModsListModel);
-        optionalModsList = new JList<>(optionalModsListModel);
-        deleteModsList = new JList<>(deleteModsListModel);
+        commonModsListModel     = new DefaultListModel<>();
+        optionalModsListModel   = new DefaultListModel<>();
+        deleteModsListModel     = new DefaultListModel<>();
+        commonModsList          = new JList<>(commonModsListModel);
+        optionalModsList        = new JList<>(optionalModsListModel);
+        deleteModsList          = new JList<>(deleteModsListModel);
+
         commonModsList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         optionalModsList.setCellRenderer(new ObjectCheck<>());
         optionalModsList.setSelectionModel(new DefaultListSelectionModel() {
@@ -143,22 +141,22 @@ public class MainWindow extends JFrame {
             }
         });
         deleteModsList.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-        JScrollPane commonScroll = new JScrollPane(commonModsList),
-                optionalScroll = new JScrollPane(optionalModsList),
-                deleteScroll = new JScrollPane(deleteModsList);
-        JLabel  commonLabel = new JLabel(I18nUtils.getContext("window.modsCommon")),
-                optionalLabel = new JLabel(I18nUtils.getContext("window.modsOptional")),
-                deleteLabel = new JLabel(I18nUtils.getContext("window.modsDelete"));
-        commonPanel.add(commonLabel, BorderLayout.NORTH);
-        commonPanel.add(commonScroll, BorderLayout.CENTER);
-        optionalPanel.add(optionalLabel, BorderLayout.NORTH);
-        optionalPanel.add(optionalScroll, BorderLayout.CENTER);
-        deletePanel.add(deleteLabel, BorderLayout.NORTH);
-        deletePanel.add(deleteScroll, BorderLayout.CENTER);
+        JScrollPane commonScroll    = new JScrollPane(commonModsList),
+                    optionalScroll  = new JScrollPane(optionalModsList),
+                    deleteScroll    = new JScrollPane(deleteModsList);
+        JLabel  commonLabel     = new JLabel(I18nUtils.getContext("window.modsCommon")),
+                optionalLabel   = new JLabel(I18nUtils.getContext("window.modsOptional")),
+                deleteLabel     = new JLabel(I18nUtils.getContext("window.modsDelete"));
+        commonPanel     .add(commonLabel, BorderLayout.NORTH);
+        commonPanel     .add(commonScroll, BorderLayout.CENTER);
+        optionalPanel   .add(optionalLabel, BorderLayout.NORTH);
+        optionalPanel   .add(optionalScroll, BorderLayout.CENTER);
+        deletePanel     .add(deleteLabel, BorderLayout.NORTH);
+        deletePanel     .add(deleteScroll, BorderLayout.CENTER);
 
         GridBagConstraints  commonConst     = new GridBagConstraints(),
-                optionalConst   = new GridBagConstraints(),
-                deleteConst     = new GridBagConstraints();
+                            optionalConst   = new GridBagConstraints(),
+                            deleteConst     = new GridBagConstraints();
         commonConst.fill    = GridBagConstraints.BOTH;
         optionalConst.fill  = GridBagConstraints.BOTH;
         deleteConst.fill    = GridBagConstraints.BOTH;
@@ -184,9 +182,9 @@ public class MainWindow extends JFrame {
         deleteConst.weightx     = 1;
         deleteConst.weighty     = 1;
 
-        centerPanel.add(commonPanel, commonConst);
-        centerPanel.add(optionalPanel, optionalConst);
-        centerPanel.add(deletePanel, deleteConst);
+        centerPanel.add(commonPanel,    commonConst);
+        centerPanel.add(optionalPanel,  optionalConst);
+        centerPanel.add(deletePanel,    deleteConst);
 
         JPanel taskListPanel = new JPanel(new BorderLayout(3,3));
         JLabel taskListLabel = new JLabel(I18nUtils.getContext("window.taskList"));

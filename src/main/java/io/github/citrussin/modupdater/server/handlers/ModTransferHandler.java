@@ -5,7 +5,6 @@ import io.github.citrussin.modupdater.server.ModManifestManager;
 import io.github.citrussin.modupdater.server.ServerConfig;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.http.HttpException;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.protocol.HttpContext;
@@ -13,6 +12,7 @@ import org.apache.http.protocol.HttpRequestHandler;
 
 import java.io.IOException;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 
 public class ModTransferHandler implements HttpRequestHandler {
     protected final Log log = LogFactory.getLog(getClass());
@@ -25,12 +25,16 @@ public class ModTransferHandler implements HttpRequestHandler {
     }
 
     @Override
-    public void handle(HttpRequest request, HttpResponse response, HttpContext context) throws HttpException, IOException {
-        String[] parts = request.getRequestLine().getUri().split("/");
-        String md5 = parts[parts.length - 1];
-        Mod mod = manifestManager.getModManifest().searchMD5(md5);
-        if (mod == null) {
-            String fileName = URLDecoder.decode(parts[parts.length - 1], "UTF-8");
+    public void handle(HttpRequest request, HttpResponse response, HttpContext context) throws IOException {
+        String uri = request.getRequestLine().getUri();
+        if (uri.endsWith("/")) {
+            response.setStatusCode(404);
+            return;
+        }
+        String requestName = uri.substring(uri.lastIndexOf('/')+1);
+        Mod mod = manifestManager.getModManifest().searchByHash(requestName);
+        if (mod == null) {  // if request name is filename instead of md5
+            String fileName = URLDecoder.decode(requestName, StandardCharsets.UTF_8.name());
             mod = manifestManager.getModManifest().searchFilename(fileName);
             if (mod == null) {
                 response.setStatusCode(404);
