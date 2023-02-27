@@ -1,6 +1,7 @@
 package io.github.citrussin.modupdater;
 
 import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.codec.digest.DigestUtils;
 
 import java.io.*;
 import java.nio.charset.Charset;
@@ -10,7 +11,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 public class Utils {
-    private static final String HASH_ALGORITHM = "MD5";
+    private static final MessageDigest hashAlgorithm = DigestUtils.getMd5Digest();
 
     public static String readFile(File file) throws IOException {
         return readFile(file, StandardCharsets.UTF_8);
@@ -48,7 +49,7 @@ public class Utils {
     public static String calculateFileHash(File file) throws NoSuchAlgorithmException, IOException {
         FileInputStream inputStream = new FileInputStream(file);
         DigestInputStream digestStream =
-                new DigestInputStream(inputStream, MessageDigest.getInstance(HASH_ALGORITHM));
+                new DigestInputStream(inputStream, hashAlgorithm);
         byte[] buffer = new byte[4096];
         while (true) {
             if (digestStream.read(buffer) <= -1) break;

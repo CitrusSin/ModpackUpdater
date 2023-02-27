@@ -5,8 +5,8 @@ import com.google.gson.annotations.SerializedName;
 import com.google.gson.reflect.TypeToken;
 import io.github.citrussin.modupdater.network.NetworkUtils;
 import io.github.citrussin.modupdater.server.redirection.ModProvider;
-import io.github.citrussin.modupdater.server.redirection.ModRedirection;
-import io.github.citrussin.modupdater.server.redirection.ModUpload;
+import io.github.citrussin.modupdater.server.redirection.ModRedirectionProvider;
+import io.github.citrussin.modupdater.server.redirection.ModUploadProvider;
 
 import java.io.File;
 import java.io.IOException;
@@ -21,7 +21,7 @@ public class ModManifest {
     @SerializedName("optional")
     public List<Mod> optionalMods;
 
-    public List<ModRedirection> modRedirections;
+    public List<ModRedirectionProvider> modRedirectionProviders;
 
     private String remoteUrl;
 
@@ -90,16 +90,16 @@ public class ModManifest {
         if (isRemote()) {
             return null;
         }
-        for (ModRedirection redirection : modRedirections) {
+        for (ModRedirectionProvider redirection : modRedirectionProviders) {
             if (redirection.md5.equalsIgnoreCase(mod.getHashString())) {
                 return redirection;
             }
         }
-        return new ModUpload(mod);
+        return new ModUploadProvider(mod);
     }
 
     public void loadRedirectionList(String redirectionJson) {
-        this.modRedirections = GsonManager.gson.fromJson(redirectionJson, new TypeToken<List<ModRedirection>>(){}.getType());
+        this.modRedirectionProviders = GsonManager.gson.fromJson(redirectionJson, new TypeToken<List<ModRedirectionProvider>>(){}.getType());
     }
 
     public static ModManifest fromRemote(String url) throws IOException {

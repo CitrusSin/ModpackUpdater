@@ -1,10 +1,9 @@
-package io.github.citrussin.modupdater.server.redirection.setup.modrinth.api;
+package io.github.citrussin.modupdater.server.redirection.setup.modrinth;
 
 import com.google.gson.annotations.Expose;
 import io.github.citrussin.modupdater.GsonManager;
 
 import java.io.*;
-import java.nio.file.Files;
 import java.util.List;
 import java.util.Map;
 import java.util.zip.ZipEntry;

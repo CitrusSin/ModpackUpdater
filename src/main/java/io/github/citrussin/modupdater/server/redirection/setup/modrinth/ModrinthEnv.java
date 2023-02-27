@@ -1,4 +1,4 @@
-package io.github.citrussin.modupdater.server.redirection.setup.modrinth.api;
+package io.github.citrussin.modupdater.server.redirection.setup.modrinth;
 
 import com.google.gson.annotations.Expose;
 

@@ -15,9 +15,9 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-public class UpdaterServer {
+public class Server {
     public static final String CONFIG_FILE_NAME = "modupdater_server_config.json";
-    private static UpdaterServer instance;
+    private static Server instance;
 
     protected final Log log = LogFactory.getLog(this.getClass());
     protected ModManifestManager manifestManager;
@@ -25,7 +25,7 @@ public class UpdaterServer {
     ServerSocket serverSocket;
     ServerConfig config;
 
-    public UpdaterServer() throws IOException {
+    public Server() throws IOException {
         instance = this;
 
         config = new ServerConfig();
@@ -84,7 +84,7 @@ public class UpdaterServer {
         return manifestManager;
     }
 
-    public static UpdaterServer getInstance() {
+    public static Server getInstance() {
         return instance;
     }
 }

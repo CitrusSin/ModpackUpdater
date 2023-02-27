@@ -5,7 +5,6 @@ import java.io.IOException;
 
 public class TaskDownload extends TaskFileOperation {
     protected String url;
-    protected File file;
 
     public TaskDownload(String url, File file) {
         this.url = url;

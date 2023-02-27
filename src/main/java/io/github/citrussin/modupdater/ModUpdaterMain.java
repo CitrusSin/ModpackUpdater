@@ -2,8 +2,8 @@ package io.github.citrussin.modupdater;
 
 import io.github.citrussin.modupdater.cli.CommandParser;
 import io.github.citrussin.modupdater.cli.ModUpdaterArguments;
-import io.github.citrussin.modupdater.client.UpdaterClient;
-import io.github.citrussin.modupdater.server.UpdaterServer;
+import io.github.citrussin.modupdater.client.Client;
+import io.github.citrussin.modupdater.server.Server;
 import io.github.citrussin.modupdater.server.redirection.setup.curseforge.CurseforgeRedirectionInitializer;
 import io.github.citrussin.modupdater.server.redirection.setup.modrinth.ModrinthRedirectionInitializer;
 import org.apache.commons.logging.Log;
@@ -50,12 +50,12 @@ public class ModUpdaterMain {
             }
         } else if (arguments.isServer) {
             try {
-                new UpdaterServer().runServer();
+                new Server().runServer();
             } catch (IOException e) {
                 e.printStackTrace();
             }
         } else {
-            new UpdaterClient();
+            new Client();
         }
     }
 

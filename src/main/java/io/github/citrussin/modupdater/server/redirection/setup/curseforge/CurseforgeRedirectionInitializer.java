@@ -4,9 +4,7 @@ import io.github.citrussin.modupdater.ModManifest;
 import io.github.citrussin.modupdater.Utils;
 import io.github.citrussin.modupdater.async.TaskQueueBuilder;
 import io.github.citrussin.modupdater.server.redirection.setup.RedirectionInitializer;
-import io.github.citrussin.modupdater.server.redirection.setup.TaskDownloadMod;
-import io.github.citrussin.modupdater.server.redirection.setup.curseforge.api.CurseforgeManifest;
-import io.github.citrussin.modupdater.server.redirection.setup.curseforge.api.CurseforgeMod;
+import io.github.citrussin.modupdater.server.redirection.setup.TaskDownloadSourceMod;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -25,10 +23,10 @@ public class CurseforgeRedirectionInitializer extends RedirectionInitializer {
     }
 
     @Override
-    protected void initializeDownloadTasks(ModManifest localManifest, TaskQueueBuilder<TaskDownloadMod, String> tasksRunnerBuilder) {
+    protected void initializeDownloadTasks(ModManifest localManifest, TaskQueueBuilder<TaskDownloadSourceMod, String> tasksRunnerBuilder) {
         File modsFolder = new File(serverConfig.commonModsFolder);
         for (CurseforgeMod mod : manifest.files) {
-            tasksRunnerBuilder.addTask(new TaskDownloadMod(mod.getUrl(), new File(modsFolder, mod.getName())));
+            tasksRunnerBuilder.addTask(new TaskDownloadSourceMod(mod.getUrl(), new File(modsFolder, mod.getName())));
             log.info(String.format("%s added to download list", mod.getName()));
         }
     }

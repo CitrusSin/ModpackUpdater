@@ -8,10 +8,10 @@ import org.apache.http.protocol.HttpContext;
 
 import java.io.File;
 
-public class ModUpload implements ModProvider {
+public class ModUploadProvider implements ModProvider {
     private File localFile;
 
-    public ModUpload(Mod mod) {
+    public ModUploadProvider(Mod mod) {
         this.localFile = mod.localFile;
     }
 

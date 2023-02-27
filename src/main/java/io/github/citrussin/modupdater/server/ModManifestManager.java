@@ -87,7 +87,7 @@ public class ModManifestManager {
                     return;
                 }
                 for (WatchEvent<?> event: key.pollEvents()) {
-                    WatchEvent.Kind kind = event.kind();
+                    WatchEvent.Kind<?> kind = event.kind();
                     if (kind == OVERFLOW) {
                         continue;
                     }

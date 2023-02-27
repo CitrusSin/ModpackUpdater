@@ -1,4 +1,4 @@
-package io.github.citrussin.modupdater.server.redirection.setup.curseforge.api;
+package io.github.citrussin.modupdater.server.redirection.setup.curseforge;
 
 import io.github.citrussin.modupdater.Mod;
 import io.github.citrussin.modupdater.network.NetworkUtils;

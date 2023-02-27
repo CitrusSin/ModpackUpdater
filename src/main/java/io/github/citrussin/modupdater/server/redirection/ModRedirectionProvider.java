@@ -5,16 +5,16 @@ import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.protocol.HttpContext;
 
-public class ModRedirection implements ModProvider {
+public class ModRedirectionProvider implements ModProvider {
     @Expose
     public String md5;
 
     @Expose
     public String url;
 
-    public ModRedirection() {}
+    public ModRedirectionProvider() {}
 
-    public ModRedirection(String md5, String url) {
+    public ModRedirectionProvider(String md5, String url) {
         this.md5 = md5;
         this.url = url;
     }

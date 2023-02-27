@@ -11,8 +11,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Locale;
 
-public class UpdaterClient {
-    private static UpdaterClient instance;
+public class Client {
+    private static Client instance;
 
     protected final Log log = LogFactory.getLog(getClass());
 
@@ -21,7 +21,7 @@ public class UpdaterClient {
 
     private File configFile;
 
-    public UpdaterClient() {
+    public Client() {
         instance = this;
         I18nUtils.loadLanguage(Locale.getDefault());
 
@@ -49,7 +49,7 @@ public class UpdaterClient {
         Utils.writeFile(configFile, GsonManager.prettyGson.toJson(config));
     }
 
-    public static UpdaterClient getInstance() {
+    public static Client getInstance() {
         return instance;
     }
 }

@@ -4,8 +4,6 @@ import java.io.File;
 import java.io.IOException;
 
 public class TaskDelete extends TaskFileOperation {
-    final File file;
-
     public TaskDelete(File file) {
         this.file = file;
     }

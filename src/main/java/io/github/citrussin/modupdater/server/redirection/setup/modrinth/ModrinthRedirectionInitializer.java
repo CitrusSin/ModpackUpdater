@@ -3,9 +3,7 @@ package io.github.citrussin.modupdater.server.redirection.setup.modrinth;
 import io.github.citrussin.modupdater.ModManifest;
 import io.github.citrussin.modupdater.async.TaskQueueBuilder;
 import io.github.citrussin.modupdater.server.redirection.setup.RedirectionInitializer;
-import io.github.citrussin.modupdater.server.redirection.setup.TaskDownloadMod;
-import io.github.citrussin.modupdater.server.redirection.setup.modrinth.api.ModrinthFile;
-import io.github.citrussin.modupdater.server.redirection.setup.modrinth.api.ModrinthPack;
+import io.github.citrussin.modupdater.server.redirection.setup.TaskDownloadSourceMod;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -22,7 +20,7 @@ public class ModrinthRedirectionInitializer extends RedirectionInitializer {
     }
 
     @Override
-    protected void initializeDownloadTasks(ModManifest localManifest, TaskQueueBuilder<TaskDownloadMod, String> tasksRunnerBuilder) {
+    protected void initializeDownloadTasks(ModManifest localManifest, TaskQueueBuilder<TaskDownloadSourceMod, String> tasksRunnerBuilder) {
         File commonModsFolder = new File(serverConfig.commonModsFolder);
         File optionalModsFolder = new File(serverConfig.optionalModsFolder);
 
@@ -35,7 +33,7 @@ public class ModrinthRedirectionInitializer extends RedirectionInitializer {
             }
 
             String name = file.getName();
-            TaskDownloadMod task = new TaskDownloadMod(file.downloads.get(0), new File(destinationFolder, name));
+            TaskDownloadSourceMod task = new TaskDownloadSourceMod(file.downloads.get(0), new File(destinationFolder, name));
             tasksRunnerBuilder.addTask(task);
             System.out.printf("%s added to download task%n", name);
         }

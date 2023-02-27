@@ -5,7 +5,7 @@ import io.github.citrussin.modupdater.ModManifest;
 import io.github.citrussin.modupdater.async.TaskQueue;
 import io.github.citrussin.modupdater.client.ClientConfig;
 import io.github.citrussin.modupdater.client.UpdateStrategy;
-import io.github.citrussin.modupdater.client.UpdaterClient;
+import io.github.citrussin.modupdater.client.Client;
 import io.github.citrussin.modupdater.client.ui.MainWindow;
 import io.github.citrussin.modupdater.client.utils.I18nUtils;
 import io.github.citrussin.modupdater.network.NetworkUtils;
@@ -156,7 +156,7 @@ public class MainController {
     private void syncConfigAndSave() {
         syncConfig();
         try {
-            UpdaterClient.getInstance().saveConfig(config);
+            Client.getInstance().saveConfig(config);
         } catch (IOException ex) {
             log.error("Save config failed: ", ex);
         }
@@ -206,7 +206,7 @@ public class MainController {
     private Thread createUpdateThread() {
         return new Thread(() -> {
             Log log = LogFactory.getLog("updateUIThread");
-            UpdaterClient client = UpdaterClient.getInstance();
+            Client client = Client.getInstance();
             try {
                 if (strategy == null) {
                     getStrategy();

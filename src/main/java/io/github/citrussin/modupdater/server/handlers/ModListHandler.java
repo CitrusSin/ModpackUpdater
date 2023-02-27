@@ -2,7 +2,7 @@ package io.github.citrussin.modupdater.server.handlers;
 
 import io.github.citrussin.modupdater.ModManifest;
 import io.github.citrussin.modupdater.server.ServerConfig;
-import io.github.citrussin.modupdater.server.UpdaterServer;
+import io.github.citrussin.modupdater.server.Server;
 import org.apache.http.HttpException;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
@@ -23,7 +23,7 @@ public class ModListHandler implements HttpRequestHandler {
 
     @Override
     public void handle(HttpRequest request, HttpResponse response, HttpContext context) throws HttpException, IOException {
-        ModManifest mods = UpdaterServer.getInstance().getManifestManager().getModManifest();
+        ModManifest mods = Server.getInstance().getManifestManager().getModManifest();
         String ctx = mods.getJson();
         response.setStatusCode(200);
         ByteArrayEntity entity = new ByteArrayEntity(ctx.getBytes(StandardCharsets.UTF_8), ContentType.APPLICATION_JSON);

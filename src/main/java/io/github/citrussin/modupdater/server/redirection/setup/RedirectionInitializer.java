@@ -6,8 +6,8 @@ import io.github.citrussin.modupdater.Utils;
 import io.github.citrussin.modupdater.async.TaskQueue;
 import io.github.citrussin.modupdater.async.TaskQueueBuilder;
 import io.github.citrussin.modupdater.server.ServerConfig;
-import io.github.citrussin.modupdater.server.UpdaterServer;
-import io.github.citrussin.modupdater.server.redirection.ModRedirection;
+import io.github.citrussin.modupdater.server.Server;
+import io.github.citrussin.modupdater.server.redirection.ModRedirectionProvider;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -24,7 +24,7 @@ public abstract class RedirectionInitializer {
     public RedirectionInitializer() throws IOException {
         // Load configuration file
         serverConfig = new ServerConfig();
-        File serverConfigFile = new File(UpdaterServer.CONFIG_FILE_NAME);
+        File serverConfigFile = new File(Server.CONFIG_FILE_NAME);
         if (!serverConfigFile.exists()) {
             Utils.writeFile(serverConfigFile, GsonManager.prettyGson.toJson(serverConfig));
         } else {
@@ -72,18 +72,18 @@ public abstract class RedirectionInitializer {
         }
     }
 
-    protected abstract void initializeDownloadTasks(ModManifest localManifest, TaskQueueBuilder<TaskDownloadMod, String> tasksRunnerBuilder);
+    protected abstract void initializeDownloadTasks(ModManifest localManifest, TaskQueueBuilder<TaskDownloadSourceMod, String> tasksRunnerBuilder);
 
     public void initializeLinks() {
         // Prepare variables
-        List<ModRedirection> list = new LinkedList<>();
+        List<ModRedirectionProvider> list = new LinkedList<>();
         ModManifest localManifest = new ModManifest(serverConfig.commonModsFolder, serverConfig.optionalModsFolder);
-        TaskQueueBuilder<TaskDownloadMod, String> tasksRunnerBuilder = new TaskQueueBuilder<>();
+        TaskQueueBuilder<TaskDownloadSourceMod, String> tasksRunnerBuilder = new TaskQueueBuilder<>();
         tasksRunnerBuilder.setMaxThreadCount(this.serverConfig.maxThreadCount);
         // Initializing download task
         initializeDownloadTasks(localManifest, tasksRunnerBuilder);
         // Set up tasks runner, register progress bar updating procedure
-        TaskQueue<TaskDownloadMod, String> tasksRunner = tasksRunnerBuilder.build();
+        TaskQueue<TaskDownloadSourceMod, String> tasksRunner = tasksRunnerBuilder.build();
         tasksRunner.addWatchCallback((tr) -> outputProgress((int)tr.getPercent()));
         tasksRunner.addExceptionCallback((task, ex) -> {
             System.out.print(repeatChar('\b', progressBarLen));
@@ -105,6 +105,8 @@ public abstract class RedirectionInitializer {
         tasksRunner.forEachFinished((task) -> {
             if (task.redirection != null) {
                 list.add(task.redirection);
+            } else {
+                System.out.printf("Warning: Did not download %s successfully.%n", task.getFile().getName());
             }
         });
         // Write redirection file

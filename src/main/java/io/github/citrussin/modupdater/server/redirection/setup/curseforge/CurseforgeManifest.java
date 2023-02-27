@@ -1,4 +1,4 @@
-package io.github.citrussin.modupdater.server.redirection.setup.curseforge.api;
+package io.github.citrussin.modupdater.server.redirection.setup.curseforge;
 
 import com.google.gson.annotations.Expose;
 import io.github.citrussin.modupdater.GsonManager;
