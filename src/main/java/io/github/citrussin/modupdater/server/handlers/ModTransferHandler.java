@@ -3,7 +3,6 @@ package io.github.citrussin.modupdater.server.handlers;
 import io.github.citrussin.modupdater.Mod;
 import io.github.citrussin.modupdater.server.ModManifestManager;
 import io.github.citrussin.modupdater.server.ServerConfig;
-import io.github.citrussin.modupdater.server.redirection.ModProvider;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpRequest;
@@ -14,8 +13,6 @@ import org.apache.http.protocol.HttpRequestHandler;
 import java.io.IOException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 
 public class ModTransferHandler implements HttpRequestHandler {
     protected final Log log = LogFactory.getLog(getClass());

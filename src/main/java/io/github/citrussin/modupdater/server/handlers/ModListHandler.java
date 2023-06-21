@@ -1,8 +1,8 @@
 package io.github.citrussin.modupdater.server.handlers;
 
 import io.github.citrussin.modupdater.ModManifest;
-import io.github.citrussin.modupdater.server.ServerConfig;
 import io.github.citrussin.modupdater.server.Server;
+import io.github.citrussin.modupdater.server.ServerConfig;
 import org.apache.http.HttpException;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;

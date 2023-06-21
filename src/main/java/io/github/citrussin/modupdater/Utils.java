@@ -2,13 +2,15 @@ package io.github.citrussin.modupdater;
 
 import org.apache.commons.codec.binary.Hex;
 
-import java.security.NoSuchAlgorithmException;
-import java.util.*;
 import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 
 public class Utils {
     //private static final MessageDigest hashAlgorithm = DigestUtils.getMd5Digest();
@@ -22,9 +24,9 @@ public class Utils {
         if (length > 0) {
             byte[] buffer = new byte[length];
             FileInputStream inputStream = new FileInputStream(file);
-            inputStream.read(buffer);
+            int realLen = inputStream.read(buffer);
             inputStream.close();
-            return new String(buffer, charset);
+            return new String(buffer, 0, realLen, charset);
         } else {
             return "";
         }

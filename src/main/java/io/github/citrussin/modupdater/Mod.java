@@ -1,7 +1,6 @@
 package io.github.citrussin.modupdater;
 
 import com.google.gson.annotations.Expose;
-
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -9,11 +8,7 @@ import org.apache.commons.logging.LogFactory;
 import java.io.File;
 import java.io.IOException;
 import java.security.MessageDigest;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class Mod{
     protected static final Log log = LogFactory.getLog(Mod.class);
@@ -63,10 +58,6 @@ public class Mod{
             calculateHashString(hashAlgorithm);
         }
         return hashValues.get(hashAlgorithm.getAlgorithm());
-    }
-
-    public String getHashString() {
-        return getHashString(DEFAULT_HASH);
     }
 
     public String getFilename() {
