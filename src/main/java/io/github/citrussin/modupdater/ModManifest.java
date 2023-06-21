@@ -10,6 +10,7 @@ import io.github.citrussin.modupdater.server.redirection.ModUploadProvider;
 
 import java.io.File;
 import java.io.IOException;
+import java.security.MessageDigest;
 import java.util.List;
 
 public class ModManifest {
@@ -51,13 +52,24 @@ public class ModManifest {
     }
 
     public Mod searchByHash(String hashString) {
+        Mod target = null;
+        for (MessageDigest hashAlgorithm : Mod.HASH_ALGORITHMS) {
+            target = searchByHash(hashAlgorithm, hashString);
+            if (target != null) {
+                break;
+            }
+        }
+        return target;
+    }
+
+    public Mod searchByHash(MessageDigest hashAlgorithm, String hashString) {
         for (Mod mod : commonMods) {
-            if (mod.getHashString().equalsIgnoreCase(hashString)) {
+            if (mod.getHashString(hashAlgorithm).equalsIgnoreCase(hashString)) {
                 return mod;
             }
         }
         for (Mod mod : optionalMods) {
-            if (mod.getHashString().equalsIgnoreCase(hashString)) {
+            if (mod.getHashString(hashAlgorithm).equalsIgnoreCase(hashString)) {
                 return mod;
             }
         }
@@ -78,8 +90,8 @@ public class ModManifest {
         return null;
     }
 
-    public ModProvider getProviderByHash(String hash) {
-        return this.getProvider(this.searchByHash(hash));
+    public ModProvider getProviderByHash(MessageDigest hashAlgorithm, String hash) {
+        return this.getProvider(this.searchByHash(hashAlgorithm, hash));
     }
 
     public ModProvider getProviderWithFilename(String filename) {
@@ -87,11 +99,11 @@ public class ModManifest {
     }
 
     public ModProvider getProvider(Mod mod) {
-        if (isRemote()) {
+        if (isRemote() || mod == null) {
             return null;
         }
         for (ModRedirectionProvider redirection : modRedirectionProviders) {
-            if (redirection.md5.equalsIgnoreCase(mod.getHashString())) {
+            if (mod.checkHashValues(redirection.hashValues)) {
                 return redirection;
             }
         }

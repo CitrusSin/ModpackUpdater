@@ -1,5 +1,7 @@
 package io.github.citrussin.modupdater.server.redirection.setup;
 
+import io.github.citrussin.modupdater.Mod;
+import io.github.citrussin.modupdater.ModManifest;
 import io.github.citrussin.modupdater.Utils;
 import io.github.citrussin.modupdater.network.TaskDownload;
 import io.github.citrussin.modupdater.server.redirection.ModRedirectionProvider;
@@ -23,10 +25,6 @@ public class TaskDownloadSourceMod extends TaskDownload {
     @Override
     protected void execute() throws IOException {
         super.execute();
-        try {
-            this.redirection = new ModRedirectionProvider(Utils.calculateFileHash(this.file), this.url);
-        } catch (NoSuchAlgorithmException e) {
-            log.error("Calculate MD5 failed", e);
-        }
+        this.redirection = new ModRedirectionProvider(Utils.calculateFileHash(this.file, Mod.HASH_ALGORITHMS), this.url);
     }
 }

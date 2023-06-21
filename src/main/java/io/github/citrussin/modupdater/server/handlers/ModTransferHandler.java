@@ -3,6 +3,7 @@ package io.github.citrussin.modupdater.server.handlers;
 import io.github.citrussin.modupdater.Mod;
 import io.github.citrussin.modupdater.server.ModManifestManager;
 import io.github.citrussin.modupdater.server.ServerConfig;
+import io.github.citrussin.modupdater.server.redirection.ModProvider;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpRequest;
@@ -13,6 +14,8 @@ import org.apache.http.protocol.HttpRequestHandler;
 import java.io.IOException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 public class ModTransferHandler implements HttpRequestHandler {
     protected final Log log = LogFactory.getLog(getClass());
@@ -31,7 +34,7 @@ public class ModTransferHandler implements HttpRequestHandler {
             response.setStatusCode(404);
             return;
         }
-        String requestName = uri.substring(uri.lastIndexOf('/')+1);
+        String requestName = uri.substring(uri.lastIndexOf('/') + 1);
         Mod mod = manifestManager.getModManifest().searchByHash(requestName);
         if (mod == null) {  // if request name is filename instead of md5
             String fileName = URLDecoder.decode(requestName, StandardCharsets.UTF_8.name());

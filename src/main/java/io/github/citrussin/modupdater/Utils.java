@@ -1,17 +1,17 @@
 package io.github.citrussin.modupdater;
 
 import org.apache.commons.codec.binary.Hex;
-import org.apache.commons.codec.digest.DigestUtils;
 
+import java.security.NoSuchAlgorithmException;
+import java.util.*;
 import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 
 public class Utils {
-    private static final MessageDigest hashAlgorithm = DigestUtils.getMd5Digest();
+    //private static final MessageDigest hashAlgorithm = DigestUtils.getMd5Digest();
 
     public static String readFile(File file) throws IOException {
         return readFile(file, StandardCharsets.UTF_8);
@@ -46,7 +46,7 @@ public class Utils {
         writer.close();
     }
 
-    public static String calculateFileHash(File file) throws NoSuchAlgorithmException, IOException {
+    public static String calculateFileHash(File file, MessageDigest hashAlgorithm) throws IOException {
         FileInputStream inputStream = new FileInputStream(file);
         DigestInputStream digestStream =
                 new DigestInputStream(inputStream, hashAlgorithm);
@@ -59,5 +59,24 @@ public class Utils {
         String hash = Hex.encodeHexString(digest);
         digestStream.close();
         return hash;
+    }
+
+    public static Map<String, String> calculateFileHash(File file, MessageDigest[] hashAlgorithms)
+            throws IOException {
+        Map<String, String> map = new TreeMap<>();
+        for (MessageDigest hashAlgorithm : hashAlgorithms) {
+            map.put(hashAlgorithm.getAlgorithm(), calculateFileHash(file, hashAlgorithm));
+        }
+        return map;
+    }
+
+    public static <T> Set<T> getIntersection(Set<T> s1, Set<T> s2) {
+        Set<T> setResult = new HashSet<>();
+        s1.forEach(e -> {
+            if (s2.contains(e)) {
+                setResult.add(e);
+            }
+        });
+        return setResult;
     }
 }

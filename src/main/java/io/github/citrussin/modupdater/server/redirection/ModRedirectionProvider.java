@@ -5,17 +5,19 @@ import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.protocol.HttpContext;
 
+import java.util.Map;
+
 public class ModRedirectionProvider implements ModProvider {
     @Expose
-    public String md5;
+    public Map<String, String> hashValues;
 
     @Expose
     public String url;
 
     public ModRedirectionProvider() {}
 
-    public ModRedirectionProvider(String md5, String url) {
-        this.md5 = md5;
+    public ModRedirectionProvider(Map<String, String> hashValues, String url) {
+        this.hashValues = hashValues;
         this.url = url;
     }
 

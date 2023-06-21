@@ -1,8 +1,10 @@
 package io.github.citrussin.modupdater.server;
 
 import io.github.citrussin.modupdater.GsonManager;
+import io.github.citrussin.modupdater.Mod;
 import io.github.citrussin.modupdater.ModUpdaterMain;
 import io.github.citrussin.modupdater.Utils;
+import io.github.citrussin.modupdater.server.handlers.ModHashTransferHandler;
 import io.github.citrussin.modupdater.server.handlers.ModListHandler;
 import io.github.citrussin.modupdater.server.handlers.ModTransferHandler;
 import org.apache.commons.logging.Log;
@@ -14,6 +16,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.security.MessageDigest;
 
 public class Server {
     public static final String CONFIG_FILE_NAME = "modupdater_server_config.json";
@@ -44,6 +47,12 @@ public class Server {
         UriHttpRequestHandlerMapper mapper = new UriHttpRequestHandlerMapper();
         mapper.register("/mods/list", new ModListHandler(config));
         mapper.register("/mods/downloads/*", new ModTransferHandler(config, manifestManager));
+        for (MessageDigest hashAlgorithm : Mod.HASH_ALGORITHMS) {
+            mapper.register(
+                    String.format("/mods/downloads/%s/*", hashAlgorithm.getAlgorithm()),
+                    new ModHashTransferHandler(config, manifestManager, hashAlgorithm)
+            );
+        }
 
         HttpProcessor processor = HttpProcessorBuilder.create()
                 .add(new ResponseDate())

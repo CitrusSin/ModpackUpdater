@@ -1,0 +1,20 @@
+{
+  "window.title": "Mod更新器",
+  "window.update": "更新Mods",
+  "window.refreshList": "刷新",
+  "window.address": "远程同步地址：",
+  "window.mods": "本地Mods文件夹：",
+  "window.modsCommon": "必选Mods:",
+  "window.modsOptional": "可选Mods: ",
+  "window.modsDelete": "要删除的Mods（勾选则删除）: ",
+  "window.autoUpdate": "启动时自动更新Mods",
+  "window.taskList": "任务列表：",
+  "popup.title.message": "提示",
+  "status.receivingModList": "获取远端mod列表...",
+  "status.completeReceivingModList": "远端列表获取完毕!",
+  "status.updateComplete": "Mod更新完毕!",
+  "operation.download": "下载操作：",
+  "operation.delete": "删除操作：",
+  "error.receivingModList": "抓取Mod列表时发生错误：",
+  "error.downloadingMod": "下载Mod时发生错误："
+}

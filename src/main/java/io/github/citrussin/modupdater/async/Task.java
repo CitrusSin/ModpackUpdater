@@ -1,10 +1,6 @@
 package io.github.citrussin.modupdater.async;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 public abstract class Task<P> extends Thread {
-    private static final Log log = LogFactory.getLog(Task.class);
     private P progressValue;
     private Throwable exception = null;
     private boolean hasStarted = false;

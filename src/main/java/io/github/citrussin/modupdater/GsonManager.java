@@ -1,7 +1,10 @@
 package io.github.citrussin.modupdater;
 
+import com.google.gson.ExclusionStrategy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+
+import java.util.Map;
 
 public class GsonManager {
     public static final Gson prettyGson = new GsonBuilder()

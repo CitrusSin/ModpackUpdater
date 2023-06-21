@@ -1,20 +1,35 @@
 package io.github.citrussin.modupdater;
 
 import com.google.gson.annotations.Expose;
+
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.io.File;
 import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
+import java.security.MessageDigest;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class Mod{
     protected static final Log log = LogFactory.getLog(Mod.class);
 
+    public static final MessageDigest[] HASH_ALGORITHMS = {
+        DigestUtils.getMd5Digest(),
+        DigestUtils.getSha256Digest(),
+        DigestUtils.getSha512Digest()
+    };
+
+    public static final MessageDigest DEFAULT_HASH = DigestUtils.getSha512Digest();
+
+    //@Expose
+    //private String hashString;
     @Expose
-    private String hashString;
+    private Map<String, String> hashValues;
 
     @Expose
     private String fileName;
@@ -22,38 +37,69 @@ public class Mod{
     public File localFile;
 
     public Mod(File file) {
-        fileName = file.getName();
-        localFile = file;
-        calculateHashString();
+        this(file, HASH_ALGORITHMS);
     }
 
-    protected void calculateHashString() {
+    public Mod(File file, MessageDigest[] algorithms) {
+        fileName = file.getName();
+        localFile = file;
+        hashValues = new HashMap<>();
+        for (MessageDigest algorithm : algorithms) {
+            calculateHashString(algorithm);
+        }
+    }
+
+    protected void calculateHashString(MessageDigest hashAlgorithm) {
         try {
-            hashString = Utils.calculateFileHash(localFile);
-        } catch (NoSuchAlgorithmException | IOException e) {
+            String algorithmName = hashAlgorithm.getAlgorithm();
+            hashValues.put(algorithmName, Utils.calculateFileHash(localFile, hashAlgorithm));
+        } catch (IOException e) {
             log.error("Hash calculation failed: ", e);
         }
     }
 
+    public String getHashString(MessageDigest hashAlgorithm) {
+        if (!hashValues.containsKey(hashAlgorithm.getAlgorithm())) {
+            calculateHashString(hashAlgorithm);
+        }
+        return hashValues.get(hashAlgorithm.getAlgorithm());
+    }
+
     public String getHashString() {
-        return hashString;
+        return getHashString(DEFAULT_HASH);
     }
 
     public String getFilename() {
         return fileName;
     }
 
+    public boolean checkHashValues(Map<String, String> hashValues) {
+        Set<String> commonAlgorithmSet = Utils.getIntersection(hashValues.keySet(), this.hashValues.keySet());
+        if (commonAlgorithmSet.isEmpty()) {
+            return false;
+        }
+        boolean match = true;
+        for (String algorithmName : commonAlgorithmSet) {
+            if (!hashValues.get(algorithmName).equalsIgnoreCase(this.hashValues.get(algorithmName))) {
+                match = false;
+                break;
+            }
+        }
+        return match;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof Mod) {
-            return this.getHashString().equalsIgnoreCase(((Mod) obj).getHashString());
+            Mod mod2 = (Mod)obj;
+            return checkHashValues(mod2.hashValues);
         }
         return false;
     }
 
     @Override
     public int hashCode() {
-        return this.getHashString().toLowerCase().hashCode();
+        return this.getHashString(DEFAULT_HASH).toLowerCase().hashCode();
     }
 
     @Override
