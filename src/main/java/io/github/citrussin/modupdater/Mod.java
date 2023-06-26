@@ -88,7 +88,7 @@ public class Mod{
 
     @Override
     public int hashCode() {
-        return this.getHashString(DEFAULT_HASH).toLowerCase().hashCode();
+        return this.getHashString(DEFAULT_HASH).toLowerCase(Locale.ROOT).hashCode();
     }
 
     @Override
