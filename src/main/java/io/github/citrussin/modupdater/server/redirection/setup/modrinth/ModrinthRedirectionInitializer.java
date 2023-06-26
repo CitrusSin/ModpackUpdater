@@ -11,7 +11,6 @@ import java.io.File;
 import java.io.IOException;
 
 public class ModrinthRedirectionInitializer extends RedirectionInitializer {
-    private static final Log log = LogFactory.getLog(ModrinthRedirectionInitializer.class);
     private ModrinthPack modrinthPack;
 
     public ModrinthRedirectionInitializer(File packFile) throws IOException {
@@ -20,7 +19,7 @@ public class ModrinthRedirectionInitializer extends RedirectionInitializer {
     }
 
     @Override
-    protected void initializeDownloadTasks(ModManifest localManifest, TaskQueueBuilder<TaskDownloadSourceMod, String> tasksRunnerBuilder) {
+    protected void initializeDownloadTasks(TaskQueueBuilder<TaskDownloadSourceMod, String> tasksRunnerBuilder) {
         File commonModsFolder = new File(serverConfig.commonModsFolder);
         File optionalModsFolder = new File(serverConfig.optionalModsFolder);
 

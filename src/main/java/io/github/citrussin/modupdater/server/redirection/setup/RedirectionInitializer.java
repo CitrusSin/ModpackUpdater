@@ -72,16 +72,15 @@ public abstract class RedirectionInitializer {
         }
     }
 
-    protected abstract void initializeDownloadTasks(ModManifest localManifest, TaskQueueBuilder<TaskDownloadSourceMod, String> tasksRunnerBuilder);
+    protected abstract void initializeDownloadTasks(TaskQueueBuilder<TaskDownloadSourceMod, String> tasksRunnerBuilder);
 
     public void initializeLinks() {
         // Prepare variables
         List<ModRedirectionProvider> list = new LinkedList<>();
-        ModManifest localManifest = new ModManifest(serverConfig.commonModsFolder, serverConfig.optionalModsFolder);
         TaskQueueBuilder<TaskDownloadSourceMod, String> tasksRunnerBuilder = new TaskQueueBuilder<>();
         tasksRunnerBuilder.setMaxThreadCount(this.serverConfig.maxThreadCount);
         // Initializing download task
-        initializeDownloadTasks(localManifest, tasksRunnerBuilder);
+        initializeDownloadTasks(tasksRunnerBuilder);
         // Set up tasks runner, register progress bar updating procedure
         TaskQueue<TaskDownloadSourceMod, String> tasksRunner = tasksRunnerBuilder.build();
         tasksRunner.addWatchCallback((tr) -> outputProgress((int)tr.getPercent()));

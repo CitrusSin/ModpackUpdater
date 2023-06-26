@@ -23,7 +23,7 @@ public class CurseforgeRedirectionInitializer extends RedirectionInitializer {
     }
 
     @Override
-    protected void initializeDownloadTasks(ModManifest localManifest, TaskQueueBuilder<TaskDownloadSourceMod, String> tasksRunnerBuilder) {
+    protected void initializeDownloadTasks(TaskQueueBuilder<TaskDownloadSourceMod, String> tasksRunnerBuilder) {
         File modsFolder = new File(serverConfig.commonModsFolder);
         for (CurseforgeMod mod : manifest.files) {
             tasksRunnerBuilder.addTask(new TaskDownloadSourceMod(mod.getUrl(), new File(modsFolder, mod.getName())));

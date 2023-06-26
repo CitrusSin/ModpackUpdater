@@ -21,15 +21,13 @@ public class Mod{
 
     public static final MessageDigest DEFAULT_HASH = DigestUtils.getSha512Digest();
 
-    //@Expose
-    //private String hashString;
     @Expose
-    private Map<String, String> hashValues;
+    private final Map<String, String> hashValues;
 
     @Expose
-    private String fileName;
+    private final String fileName;
 
-    public File localFile;
+    public final File localFile;
 
     public Mod(File file) {
         this(file, HASH_ALGORITHMS);
@@ -95,7 +93,7 @@ public class Mod{
 
     @Override
     public String toString() {
-        return getFilename();
+        return fileName;
     }
 
     public static List<Mod> getModList(File directory) {
