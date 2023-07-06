@@ -1,19 +1,16 @@
 package io.github.citrussin.modupdater.server.redirection.setup.modrinth;
 
-import io.github.citrussin.modupdater.ModManifest;
 import io.github.citrussin.modupdater.async.TaskQueueBuilder;
-import io.github.citrussin.modupdater.server.redirection.setup.RedirectionInitializer;
+import io.github.citrussin.modupdater.server.redirection.setup.PackInitializer;
 import io.github.citrussin.modupdater.server.redirection.setup.TaskDownloadSourceMod;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 import java.io.File;
 import java.io.IOException;
 
-public class ModrinthRedirectionInitializer extends RedirectionInitializer {
+public class ModrinthPackInitializer extends PackInitializer {
     private ModrinthPack modrinthPack;
 
-    public ModrinthRedirectionInitializer(File packFile) throws IOException {
+    public ModrinthPackInitializer(File packFile) throws IOException {
         super();
         modrinthPack = ModrinthPack.fromMrPack(packFile);
     }

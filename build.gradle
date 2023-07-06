@@ -50,6 +50,11 @@ task runModrinthInit(type: Exec) {
     commandLine "java","-classpath", sourceSets.main.runtimeClasspath.getAsPath(), mainClassName, "--mrpack=mod.mrpack"
 }
 
+task runModrinthParse(type: Exec) {
+    dependsOn build
+    commandLine "java","-classpath", sourceSets.main.runtimeClasspath.getAsPath(), mainClassName, "--mp"
+}
+
 clean.doLast {
     file("mods").deleteDir()
     file("clientMods").deleteDir()

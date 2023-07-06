@@ -11,9 +11,17 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 public class Utils {
-    //private static final MessageDigest hashAlgorithm = DigestUtils.getMd5Digest();
+    public static ZipEntry zipsMoveToEntryOfInternalPath(ZipInputStream zis, String path) throws IOException {
+        ZipEntry ent = zis.getNextEntry();
+        while (ent != null && !ent.getName().trim().equalsIgnoreCase(path)) {
+            ent = zis.getNextEntry();
+        }
+        return ent;
+    }
 
     public static String readFile(File file) throws IOException {
         return readFile(file, StandardCharsets.UTF_8);

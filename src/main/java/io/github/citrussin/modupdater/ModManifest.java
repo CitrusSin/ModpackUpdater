@@ -53,6 +53,7 @@ public class ModManifest {
 
     public Mod searchByHash(String hashString) {
         Mod target = null;
+        // Try every algorithm
         for (MessageDigest hashAlgorithm : Mod.HASH_ALGORITHMS) {
             target = searchByHash(hashAlgorithm, hashString);
             if (target != null) {
@@ -91,10 +92,21 @@ public class ModManifest {
     }
 
     public ModProvider getProviderByHash(MessageDigest hashAlgorithm, String hash) {
-        return this.getProvider(this.searchByHash(hashAlgorithm, hash));
+        if (isRemote()) {
+            return null;
+        }
+        for (ModRedirectionProvider redirection : modRedirectionProviders) {
+            if (
+                    redirection.hashValues.containsKey(hashAlgorithm.getAlgorithm()) &&
+                    redirection.hashValues.get(hashAlgorithm.getAlgorithm()).equalsIgnoreCase(hash)
+            ) {
+                return redirection;
+            }
+        }
+        return getProvider(this.searchByHash(hashAlgorithm, hash));
     }
 
-    public ModProvider getProviderWithFilename(String filename) {
+    public ModProvider getProviderByFilename(String filename) {
         return this.getProvider(this.searchFilename(filename));
     }
 

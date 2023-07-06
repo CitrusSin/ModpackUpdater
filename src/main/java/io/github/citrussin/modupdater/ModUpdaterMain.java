@@ -4,8 +4,9 @@ import io.github.citrussin.modupdater.cli.CommandParser;
 import io.github.citrussin.modupdater.cli.ModUpdaterArguments;
 import io.github.citrussin.modupdater.client.Client;
 import io.github.citrussin.modupdater.server.Server;
-import io.github.citrussin.modupdater.server.redirection.setup.curseforge.CurseforgeRedirectionInitializer;
-import io.github.citrussin.modupdater.server.redirection.setup.modrinth.ModrinthRedirectionInitializer;
+import io.github.citrussin.modupdater.server.redirection.setup.curseforge.CurseforgePackInitializer;
+import io.github.citrussin.modupdater.server.redirection.setup.modrinth.ModrinthPackInitializer;
+import io.github.citrussin.modupdater.server.redirection.setup.modrinth.ModrinthRedirectionInitalizer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -15,7 +16,7 @@ import java.io.IOException;
 public class ModUpdaterMain {
     private static final Log log = LogFactory.getLog(ModUpdaterMain.class);
     public static final String SERVICE_NAME = "ModpackUpdateService";
-    public static final String SERVICE_VER  = "1.4.000";
+    public static final String SERVICE_VER  = "1.5.000";
 
     public static void main(String[] args) {
         CommandParser<ModUpdaterArguments> parser = new CommandParser<>(ModUpdaterArguments.class);
@@ -28,10 +29,18 @@ public class ModUpdaterMain {
         }
 
         // Start server or client according to arguments
-        if (arguments.modrinthPackFilename != null) {
+        if (arguments.modrinthParse) {
+            try {
+                ModrinthRedirectionInitalizer redirectionInitalizer = new ModrinthRedirectionInitalizer();
+                redirectionInitalizer.initializeRedirections();
+                System.exit(0);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        } else if (arguments.modrinthPackFilename != null) {
             try {
                 File packFile = new File(arguments.modrinthPackFilename);
-                ModrinthRedirectionInitializer configurator = new ModrinthRedirectionInitializer(packFile);
+                ModrinthPackInitializer configurator = new ModrinthPackInitializer(packFile);
                 configurator.initializeLinks();
                 System.exit(0);
             } catch (IOException e) {
@@ -42,7 +51,7 @@ public class ModUpdaterMain {
             System.out.println("API Doc: https://curseforgeapi.docs.apiary.io/");
             try {
                 File manifestFile = new File(arguments.curseforgeConfigManifestFilename);
-                CurseforgeRedirectionInitializer configurator = new CurseforgeRedirectionInitializer(manifestFile);
+                CurseforgePackInitializer configurator = new CurseforgePackInitializer(manifestFile);
                 configurator.initializeLinks();
                 System.exit(0);
             } catch (IOException e) {

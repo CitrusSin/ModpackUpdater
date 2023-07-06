@@ -1,7 +1,6 @@
 package io.github.citrussin.modupdater.server.redirection.setup;
 
 import io.github.citrussin.modupdater.GsonManager;
-import io.github.citrussin.modupdater.ModManifest;
 import io.github.citrussin.modupdater.Utils;
 import io.github.citrussin.modupdater.async.TaskQueue;
 import io.github.citrussin.modupdater.async.TaskQueueBuilder;
@@ -16,12 +15,12 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
-public abstract class RedirectionInitializer {
-    private static final Log log = LogFactory.getLog(RedirectionInitializer.class);
+public abstract class PackInitializer {
+    private static final Log log = LogFactory.getLog(PackInitializer.class);
 
     protected ServerConfig serverConfig;
 
-    public RedirectionInitializer() throws IOException {
+    public PackInitializer() throws IOException {
         // Load configuration file
         serverConfig = new ServerConfig();
         File serverConfigFile = new File(Server.CONFIG_FILE_NAME);

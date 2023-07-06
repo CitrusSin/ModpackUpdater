@@ -19,7 +19,7 @@ public class I18nUtils {
 
     private static final Pattern langTokenPattern = Pattern.compile("\\$\\{(.*?)}");
 
-    public static String getContext(String langToken) {
+    public static String getContent(String langToken) {
         return language.get(langToken);
     }
 
@@ -57,7 +57,7 @@ public class I18nUtils {
         if (inputStream == null) {
             inputStream = ClassLoader.getSystemClassLoader()
                     .getResourceAsStream(
-                            "assets/modupdater/lang/en_US.json"
+                            "assets/modupdater/lang/en.json"
                     );
         }
         assert inputStream != null;

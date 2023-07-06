@@ -33,6 +33,12 @@ public class NetworkUtils {
         return httpClient.execute(get, new StringResponseHandler());
     }
 
+    public static String getStringWithUserAgent(String url, String userAgent) throws IOException {
+        HttpGet get = new HttpGet(url);
+        get.setHeader("User-Agent", userAgent);
+        return httpClient.execute(get, new StringResponseHandler());
+    }
+
     public static void download(String url, File file) throws IOException {
         if (!file.exists()) {
             boolean res = file.createNewFile();

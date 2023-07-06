@@ -1,0 +1,20 @@
+{
+  "window.title": "Mod Updater",
+  "window.update": "Update",
+  "window.refreshList": "Refresh",
+  "window.address": "Remote: ",
+  "window.mods": "Mods Folder: ",
+  "window.modsCommon": "Mods force required: ",
+  "window.modsOptional": "Mods optional: ",
+  "window.modsDelete": "Delete Mods (Delete when checked): ",
+  "window.autoUpdate": "Automatically update when start",
+  "window.taskList": "Task list: ",
+  "popup.title.message": "Message",
+  "status.receivingModList": "Receiving mods list from server side...",
+  "status.completeReceivingModList": "Done!",
+  "status.updateComplete": "Update Complete!",
+  "operation.download": "Download operation: ",
+  "operation.delete": "Delete operation: ",
+  "error.receivingModList": "Exception occurred when receiving Mod list: ",
+  "error.downloadingMod": "Exception occurred when downloading Mod: "
+}

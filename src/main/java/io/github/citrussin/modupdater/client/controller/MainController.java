@@ -253,13 +253,13 @@ public class MainController {
 
     public void popupWindow(String text, int type) {
         try {
-            SwingUtilities.invokeAndWait(() -> JOptionPane.showMessageDialog(window, I18nUtils.localize(text), I18nUtils.getContext("popup.title.message"), type));
+            SwingUtilities.invokeAndWait(() -> JOptionPane.showMessageDialog(window, I18nUtils.localize(text), I18nUtils.getContent("popup.title.message"), type));
         } catch (Exception e) {
             log.error(e);
         }
     }
 
     protected void setStatus(String langKey) {
-        window.statusLabel.setText(I18nUtils.getContext(langKey));
+        window.statusLabel.setText(I18nUtils.getContent(langKey));
     }
 }

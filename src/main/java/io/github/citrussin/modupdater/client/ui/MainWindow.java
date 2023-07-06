@@ -31,7 +31,7 @@ public class MainWindow extends JFrame {
 
     // RT, this method is to construct the UI layout
     protected void construct() {
-        this.setTitle(I18nUtils.getContext("window.title"));
+        this.setTitle(I18nUtils.getContent("window.title"));
         this.setSize(800, 850);
         this.setLocationRelativeTo(null);
 
@@ -83,9 +83,9 @@ public class MainWindow extends JFrame {
         addressField.setMaximumSize(new Dimension(300,40));
         modsField.setMaximumSize(new Dimension(300,40));
 
-        JLabel  addressLabel    = new JLabel(I18nUtils.getContext("window.address")),
-                modsLabel       = new JLabel(I18nUtils.getContext("window.mods"));
-        refreshListButton = new JButton(I18nUtils.getContext("window.refreshList"));
+        JLabel  addressLabel    = new JLabel(I18nUtils.getContent("window.address")),
+                modsLabel       = new JLabel(I18nUtils.getContent("window.mods"));
+        refreshListButton = new JButton(I18nUtils.getContent("window.refreshList"));
         subGrid1.add(BorderLayout.WEST,     addressLabel);
         subGrid1.add(BorderLayout.CENTER,   addressField);
         subGrid2.add(BorderLayout.WEST,     modsLabel);
@@ -95,7 +95,7 @@ public class MainWindow extends JFrame {
         upperPanel.add(grid);
         upperPanel.add(refreshListButton);
 
-        autoUpdateBox = new JCheckBox(I18nUtils.getContext("window.autoUpdate"));
+        autoUpdateBox = new JCheckBox(I18nUtils.getContent("window.autoUpdate"));
         upperPanel.add(autoUpdateBox);
         return upperPanel;
     }
@@ -144,9 +144,9 @@ public class MainWindow extends JFrame {
         JScrollPane commonScroll    = new JScrollPane(commonModsList),
                     optionalScroll  = new JScrollPane(optionalModsList),
                     deleteScroll    = new JScrollPane(deleteModsList);
-        JLabel  commonLabel     = new JLabel(I18nUtils.getContext("window.modsCommon")),
-                optionalLabel   = new JLabel(I18nUtils.getContext("window.modsOptional")),
-                deleteLabel     = new JLabel(I18nUtils.getContext("window.modsDelete"));
+        JLabel  commonLabel     = new JLabel(I18nUtils.getContent("window.modsCommon")),
+                optionalLabel   = new JLabel(I18nUtils.getContent("window.modsOptional")),
+                deleteLabel     = new JLabel(I18nUtils.getContent("window.modsDelete"));
         commonPanel     .add(commonLabel, BorderLayout.NORTH);
         commonPanel     .add(commonScroll, BorderLayout.CENTER);
         optionalPanel   .add(optionalLabel, BorderLayout.NORTH);
@@ -187,7 +187,7 @@ public class MainWindow extends JFrame {
         centerPanel.add(deletePanel,    deleteConst);
 
         JPanel taskListPanel = new JPanel(new BorderLayout(3,3));
-        JLabel taskListLabel = new JLabel(I18nUtils.getContext("window.taskList"));
+        JLabel taskListLabel = new JLabel(I18nUtils.getContent("window.taskList"));
         taskListPanel.add(taskListLabel, BorderLayout.NORTH);
 
         taskListModel = new DefaultListModel<>();
@@ -209,7 +209,7 @@ public class MainWindow extends JFrame {
         taskListConst.weighty       = 1;
         centerPanel.add(taskListPanel, taskListConst);
 
-        updateButton = new JButton(I18nUtils.getContext("window.update"));
+        updateButton = new JButton(I18nUtils.getContent("window.update"));
         GridBagConstraints updateButtonConst = new GridBagConstraints();
         updateButtonConst.fill          = GridBagConstraints.BOTH;
         updateButtonConst.gridx         = 0;

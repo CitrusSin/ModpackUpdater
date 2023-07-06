@@ -9,4 +9,7 @@ public class ModUpdaterArguments {
 
     @Argument(value = "modrinthModpack", aliases = {"mrpack"}, isOption = true)
     public String modrinthPackFilename = null;
+
+    @Argument(value = "modrinthParse", aliases = {"mp"}, isOption = true)
+    public boolean modrinthParse = false;
 }
