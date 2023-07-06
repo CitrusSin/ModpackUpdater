@@ -93,6 +93,7 @@ public class Mod{
         return this.localFile != null;
     }
 
+    /*
     protected void processModFileInfo() throws IOException {
         if (!localAvailable()) {
             throw new FileNotFoundException("Mod file not available");
@@ -128,6 +129,9 @@ public class Mod{
             }
             line = br.readLine();
         }
+
+        zis.close();
+        br.close();
     }
 
     public String getModId() throws IOException {
@@ -143,6 +147,7 @@ public class Mod{
         }
         return this.version;
     }
+    */
 
     public Map<String, String> getHashValues() {
         return new TreeMap<>(this.hashValues);
