@@ -22,6 +22,10 @@ which is the configuration file that you can modify.
 #### Redirecting to custom mod sources
 If your server don't have a strong network traffic to let your players download mods,
 you can redirect the download source to somewhere else so that your server can have a rest on network.  
+##### Without modpack file (Modrinth source)
+If your mod files have been already in your mods folder without setting up redirection, you should run this command:  
+``java -jar ModpackUpdater-version.jar --mp``  
+which will calculate the hash value for every mod file and find its download url on Modrinth.
 ##### Fast way to set up redirection (Modrinth Modpack)
 The name of a Modrinth Modpack file ends with ".mrpack".  
 Use the command below to set up Modrinth redirection.  
