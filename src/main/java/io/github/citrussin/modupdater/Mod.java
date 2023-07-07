@@ -1,16 +1,16 @@
 package io.github.citrussin.modupdater;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.google.gson.annotations.Expose;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import sun.reflect.generics.tree.Tree;
 
 import java.io.*;
 import java.nio.file.Files;
 import java.security.MessageDigest;
 import java.util.*;
-import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 public class Mod{
@@ -24,7 +24,8 @@ public class Mod{
 
     public static final MessageDigest DEFAULT_HASH = DigestUtils.getSha512Digest();
 
-    public static final String MOD_DESCRIPTION_FILE_PATH = "META-INF/mods.toml";
+    private static final String FORGE_MOD_DESCRIPTION_FILE_PATH = "META-INF/mods.toml";
+    private static final String FABRIC_MOD_DESCRIPTION_FILE_PATH = "fabric.mod.json";
 
     @Expose
     private final TreeMap<String, String> hashValues;
@@ -34,6 +35,7 @@ public class Mod{
 
     public final File localFile;
 
+    private LoaderType modLoaderType = LoaderType.UNKNOWN;
     private String modid = null;
     private String version = null;
 
@@ -48,9 +50,12 @@ public class Mod{
         for (MessageDigest algorithm : algorithms) {
             calculateHashString(algorithm);
         }
+        if (!hashValues.containsKey(DEFAULT_HASH.getAlgorithm())) {
+            calculateHashString(DEFAULT_HASH);
+        }
     }
 
-    protected void calculateHashString(MessageDigest hashAlgorithm) {
+    private void calculateHashString(MessageDigest hashAlgorithm) {
         try {
             String algorithmName = hashAlgorithm.getAlgorithm();
             hashValues.put(algorithmName, Utils.calculateFileHash(localFile, hashAlgorithm));
@@ -70,15 +75,10 @@ public class Mod{
         return fileName;
     }
 
-    public boolean checkHashValue(MessageDigest hashAlgorithm, String value) {
-        return value.equalsIgnoreCase(this.getHashString(hashAlgorithm));
-    }
-
     public boolean checkHashValues(Map<String, String> hashValues) {
         Set<String> commonAlgorithmSet = Utils.getIntersection(hashValues.keySet(), this.hashValues.keySet());
-        if (commonAlgorithmSet.isEmpty()) {
-            return false;
-        }
+        assert commonAlgorithmSet.contains(DEFAULT_HASH.getAlgorithm());
+
         boolean match = true;
         for (String algorithmName : commonAlgorithmSet) {
             if (!hashValues.get(algorithmName).equalsIgnoreCase(this.hashValues.get(algorithmName))) {
@@ -93,20 +93,8 @@ public class Mod{
         return this.localFile != null;
     }
 
-    /*
-    protected void processModFileInfo() throws IOException {
-        if (!localAvailable()) {
-            throw new FileNotFoundException("Mod file not available");
-        }
-        ZipInputStream zis = new ZipInputStream(Files.newInputStream(this.localFile.toPath()));
-
-        ZipEntry entry = Utils.zipsMoveToEntryOfInternalPath(zis, MOD_DESCRIPTION_FILE_PATH);
-        if (entry == null) {
-            zis.close();
-            throw new IOException("Mod file not regular");
-        }
-
-        BufferedReader br = new BufferedReader(new InputStreamReader(zis));
+    private void readForgeMod(InputStreamReader isr) throws IOException {
+        BufferedReader br = new BufferedReader(isr);
 
         String line = br.readLine();
         while (!line.trim().startsWith("[[mods]]")) {
@@ -129,25 +117,81 @@ public class Mod{
             }
             line = br.readLine();
         }
+    }
 
+    private void readFabricMod(InputStreamReader isr){
+        JsonObject obj = JsonParser.parseReader(isr).getAsJsonObject();
+        assert obj.has("schemaVersion");
+
+        this.modid = obj.get("id").getAsString();
+        this.version = obj.get("version").getAsString();
+    }
+
+    private void analyzeModLoaderType() throws IOException {
+        List<String> internalFiles = Utils.listZipFiles(localFile);
+        if (internalFiles.contains(FORGE_MOD_DESCRIPTION_FILE_PATH)) {
+            this.modLoaderType = LoaderType.FORGE;
+        } else if (internalFiles.contains(FABRIC_MOD_DESCRIPTION_FILE_PATH)) {
+            this.modLoaderType = LoaderType.FABRIC;
+        }
+    }
+
+    public LoaderType getModLoaderType() {
+        if (!localAvailable()) {
+            return LoaderType.UNKNOWN;
+        }
+        try {
+            analyzeModLoaderType();
+        } catch (IOException ignored) {
+            // ignore
+        }
+        return modLoaderType;
+    }
+
+    private void processModFileInfo() throws IOException {
+        if (!localAvailable()) {
+            throw new FileNotFoundException("Mod file not available");
+        }
+        LoaderType loaderType = this.getModLoaderType();
+        ZipInputStream zis = new ZipInputStream(Files.newInputStream(this.localFile.toPath()));
+        switch (loaderType) {
+            case FORGE:
+                Utils.zipLocateToFile(zis, FORGE_MOD_DESCRIPTION_FILE_PATH);
+                readForgeMod(new InputStreamReader(zis));
+                break;
+            case FABRIC:
+                Utils.zipLocateToFile(zis, FABRIC_MOD_DESCRIPTION_FILE_PATH);
+                readFabricMod(new InputStreamReader(zis));
+                break;
+        }
         zis.close();
-        br.close();
     }
 
-    public String getModId() throws IOException {
-        if (this.modid == null) {
-            processModFileInfo();
+    public String getModId() {
+        try {
+            if (this.modid == null) {
+                processModFileInfo();
+            }
+        } catch (Exception ignored) {}
+        if (this.modid != null) {
+            return this.modid;
+        } else {
+            return this.getFilename();
         }
-        return this.modid;
     }
 
-    public String getVersion() throws IOException {
-        if (this.version == null) {
-            processModFileInfo();
+    public String getVersion(){
+        try {
+            if (this.version == null) {
+                processModFileInfo();
+            }
+        } catch (Exception ignored) {}
+        if (this.version != null) {
+            return this.version;
+        } else {
+            return "NULL";
         }
-        return this.version;
     }
-    */
 
     public Map<String, String> getHashValues() {
         return new TreeMap<>(this.hashValues);
@@ -186,5 +230,20 @@ public class Mod{
             }
         }
         return mods;
+    }
+
+    public enum LoaderType {
+        UNKNOWN("Unknown"), FORGE("Forge"), FABRIC("Fabric");
+
+        public final String name;
+
+        LoaderType(String name) {
+            this.name = name;
+        }
+
+        @Override
+        public String toString() {
+            return name;
+        }
     }
 }

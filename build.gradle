@@ -14,11 +14,11 @@ repositories {
 }
 
 dependencies {
-    compile 'commons-codec:commons-codec:1.10'
+    compile 'commons-codec:commons-codec:1.15'
     compile 'commons-logging:commons-logging:1.2'
-    compile 'org.apache.httpcomponents:httpcore:4.4.10'
-    compile 'org.apache.httpcomponents:httpclient:4.5.6'
-    compile 'com.google.code.gson:gson:2.8.7'
+    compile 'org.apache.httpcomponents:httpcore:4.4.15'
+    compile 'org.apache.httpcomponents:httpclient:4.5.14'
+    compile 'com.google.code.gson:gson:2.10.1'
 }
 
 jar {
@@ -38,21 +38,6 @@ task runClient(type: Exec) {
 task runServer(type: Exec) {
     dependsOn build
     commandLine "java","-classpath", sourceSets.main.runtimeClasspath.getAsPath(), mainClassName, "--server"
-}
-
-task runCFInit(type: Exec) {
-    dependsOn build
-    commandLine "java","-classpath", sourceSets.main.runtimeClasspath.getAsPath(), mainClassName, "--cfConfig=manifest.json"
-}
-
-task runModrinthInit(type: Exec) {
-    dependsOn build
-    commandLine "java","-classpath", sourceSets.main.runtimeClasspath.getAsPath(), mainClassName, "--mrpack=mod.mrpack"
-}
-
-task runModrinthParse(type: Exec) {
-    dependsOn build
-    commandLine "java","-classpath", sourceSets.main.runtimeClasspath.getAsPath(), mainClassName, "--mp"
 }
 
 clean.doLast {

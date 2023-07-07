@@ -4,20 +4,13 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.google.gson.reflect.TypeToken;
-import com.google.gson.stream.JsonReader;
-import io.github.citrussin.modupdater.GsonManager;
 import io.github.citrussin.modupdater.Mod;
 import io.github.citrussin.modupdater.ModUpdaterMain;
-import io.github.citrussin.modupdater.Utils;
 import io.github.citrussin.modupdater.network.NetworkUtils;
 import io.github.citrussin.modupdater.server.redirection.setup.RedirectionInitalizer;
 import org.apache.commons.codec.digest.DigestUtils;
 
 import java.io.IOException;
-import java.lang.reflect.Type;
-import java.util.List;
-import java.util.Map;
 
 public class ModrinthRedirectionInitalizer extends RedirectionInitalizer {
     private static final String MODRINTH_API = "https://api.modrinth.com";

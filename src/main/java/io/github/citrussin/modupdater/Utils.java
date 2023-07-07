@@ -5,22 +5,34 @@ import org.apache.commons.codec.binary.Hex;
 import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
+import java.util.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 public class Utils {
-    public static ZipEntry zipsMoveToEntryOfInternalPath(ZipInputStream zis, String path) throws IOException {
-        ZipEntry ent = zis.getNextEntry();
-        while (ent != null && !ent.getName().trim().equalsIgnoreCase(path)) {
-            ent = zis.getNextEntry();
+    public static List<String> listZipFiles(File f) throws IOException {
+        List<String> paths = new LinkedList<>();
+
+        ZipInputStream zis = new ZipInputStream(Files.newInputStream(f.toPath()));
+        for (ZipEntry entry = zis.getNextEntry(); entry != null; entry = zis.getNextEntry()) {
+            paths.add(entry.getName());
         }
-        return ent;
+
+        zis.close();
+        return paths;
+    }
+
+    public static ZipEntry zipLocateToFile(ZipInputStream zis, String path) throws IOException {
+        ZipEntry entry;
+        while ((entry = zis.getNextEntry()) != null) {
+            if (entry.getName().equals(path)) {
+                break;
+            }
+        }
+        return entry;
     }
 
     public static String readFile(File file) throws IOException {

@@ -13,6 +13,7 @@ import java.io.FileReader;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -44,10 +45,11 @@ public abstract class RedirectionInitalizer {
     protected abstract String urlFromLocalMod(Mod mod) throws IOException;
 
     protected List<ModRedirectionProvider> getProviderList() throws IOException {
-        List<ModRedirectionProvider> providerList = null;
+        List<ModRedirectionProvider> providerList;
         File redirectionFile = new File(serverConfig.redirectionListPath);
         if (redirectionFile.exists()) {
-            Type type = new TypeToken<LinkedList<ModRedirectionProvider>>(){}.getType();
+            Type type = new TypeToken<LinkedList<ModRedirectionProvider>>() {
+            }.getType();
             FileReader rd = new FileReader(redirectionFile);
             providerList = GsonManager.mapGson.fromJson(rd, type);
         } else {
@@ -60,69 +62,43 @@ public abstract class RedirectionInitalizer {
         FilenameFilter jarFilter = (dir, name) -> name.endsWith(".jar");
         File[] list1 = dir1.listFiles(jarFilter);
         File[] list2 = dir2.listFiles(jarFilter);
-
+        List<File> files = new LinkedList<>();
         if (list1 != null) {
-            for (File modFile : list1) {
-                try {
-                    Mod mod = new Mod(modFile);
-
-                    boolean skipMark = false;
-                    for (ModRedirectionProvider prv : providerList) {
-                        if (mod.checkHashValues(prv.hashValues)) {
-                            skipMark = true;
-                            break;
-                        }
-                    }
-                    if (skipMark) {
-                        System.out.printf("Skipping %s%n", mod.getFilename());
-                        continue;
-                    }
-
-                    System.out.printf("Setting url for %s%n", mod.getFilename());
-                    String url = urlFromLocalMod(mod);
-
-                    if (url != null) {
-                        providerList.add(new ModRedirectionProvider(mod.getHashValues(), url));
-                        System.out.printf("%s configurated successfully.%n", mod.getFilename());
-                    } else {
-                        throw new Exception("Failed to get URL");
-                    }
-                } catch (Exception e) {
-                    System.err.printf("Failed to get information of %s%n", modFile.getName());
-                    e.printStackTrace();
-                }
-            }
+            files.addAll(Arrays.asList(list1));
+        }
+        if (list2 != null) {
+            files.addAll(Arrays.asList(list2));
         }
 
-        if (list2 != null) {
-            for (File modFile : list2) {
-                try {
-                    Mod mod = new Mod(modFile);
+        for (File modFile : files) {
+            try {
+                Mod mod = new Mod(modFile);
+                String modName = mod.getModId() + " v" + mod.getVersion();
 
-                    boolean skipMark = false;
-                    for (ModRedirectionProvider prv : providerList) {
-                        if (mod.checkHashValues(prv.hashValues)) {
-                            skipMark = true;
-                            break;
-                        }
+                boolean skipMark = false;
+                for (ModRedirectionProvider prv : providerList) {
+                    if (mod.checkHashValues(prv.hashValues)) {
+                        skipMark = true;
+                        break;
                     }
-                    if (skipMark) {
-                        System.out.printf("Skipping %s%n", mod.getFilename());
-                        continue;
-                    }
-
-                    System.out.printf("Setting url for %s%n", mod.getFilename());
-                    String url = urlFromLocalMod(mod);
-
-                    if (url != null) {
-                        providerList.add(new ModRedirectionProvider(mod.getHashValues(), url));
-                        System.out.printf("%s configurated successfully.%n", mod.getFilename());
-                    } else {
-                        throw new Exception("Failed to get URL");
-                    }
-                } catch (Exception e) {
-                    System.err.printf("Failed to get information of %s%n", modFile.getName());
                 }
+                if (skipMark) {
+                    System.out.println("Skipping " + modName);
+                    continue;
+                }
+
+                System.out.println("Setting url for " + modName);
+                String url = urlFromLocalMod(mod);
+
+                if (url != null) {
+                    providerList.add(new ModRedirectionProvider(mod.getHashValues(), url));
+                    System.out.println(modName + " configurated successfully.");
+                } else {
+                    throw new Exception("Failed to get URL");
+                }
+            } catch (Exception e) {
+                System.err.println("Failed to get information of " + modFile.getName());
+                e.printStackTrace();
             }
         }
 

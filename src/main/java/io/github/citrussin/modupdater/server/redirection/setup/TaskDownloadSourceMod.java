@@ -4,8 +4,6 @@ import io.github.citrussin.modupdater.Mod;
 import io.github.citrussin.modupdater.Utils;
 import io.github.citrussin.modupdater.network.TaskDownload;
 import io.github.citrussin.modupdater.server.redirection.ModRedirectionProvider;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 import java.io.File;
 import java.io.IOException;
