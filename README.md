@@ -114,7 +114,7 @@ Mods in "common" list are required to keep up with the server,
 while mods in "optional" list just literally means optional, or in other words, usually client side only mods.
 ### Update Mod
 After received mod list, the client will compare the local mod list with the remote one.   
-Before that, the client calculates the MD5 value of each mod, and use MD5 value as the only identification of the mod.
+Before that, the client calculates hash values of each mod, and use hash value table as the only identification of the mod.
 So it's **unnecessary to worry that players might rename the mod file** or worry about other similar concerns.  
 After comparison, the client will show three lists of mods: 
 1. Mods force required: Doesn't exist in the local mod list but exists in the "common" remote mod list.
