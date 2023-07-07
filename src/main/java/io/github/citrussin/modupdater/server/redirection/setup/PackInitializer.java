@@ -104,7 +104,7 @@ public abstract class PackInitializer {
             if (task.redirection != null) {
                 list.add(task.redirection);
             } else {
-                System.out.printf("Warning: Did not download %s successfully.%n", task.getFile().getName());
+                System.out.printf("Warning: %s have not been downloaded successfully!%n", task.getFile().getName());
             }
         });
         // Write redirection file

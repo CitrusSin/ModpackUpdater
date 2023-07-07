@@ -46,12 +46,20 @@ API方跑路了，官方API又要key，这个功能现在应该不会起作用�
 ````json
 [
   {
-    "md5": "bd7bd8bbcc8bf69339766b3b5951b42c",
-    "url": "https://edge.forgecdn.net/files/3272/82/jei-1.16.5-7.6.3.81.jar"
+    "hashValues": {
+      "MD5": "367e4dbc9cf9c918997df0892566e491",
+      "SHA-256": "0cc69ddef9f50a0a0515c2e756ae9139c32b07b101121d96c153775dcc0ad174",
+      "SHA-512": "344793519691abc511ca5ea88a00c95cae67727bf00b5f34adcb07b97b24f19e034c9a12c6cfcaa2c7f43eab193e8abe28cd437aeb9148eeb1258f7c78473099"
+    },
+    "url": "https://cdn.modrinth.com/data/E6FUtRJh/versions/E0HCy6sV/Adorn-3.8.1%2B1.19.2-fabric.jar"
   },
   {
-    "md5": "e892a46e806a6fcf945bfe4999665b53",
-    "url": "https://edge.forgecdn.net/files/3222/705/Ding-1.16.5-1.3.0.jar"
+    "hashValues": {
+      "MD5": "337332a7dcec6fa44735700bcb8b521d",
+      "SHA-256": "7172ca079a4276e56bc460acf0097957116c4ae4773d890178202425ce24dfb8",
+      "SHA-512": "092f55d9f46a64dbadfb78e5cf6dcc03d9d77999e52ca00d63adff8fe39166bcf24eb254a2bc6257e95a118bad6912ce56cfe8fb71793f3034226e7f0243f2ac"
+    },
+    "url": "https://cdn.modrinth.com/data/G1epq3jN/versions/1.19.1-fabric0.58.5-1.3.1/advancementinfo-1.19.1-fabric0.58.5-1.3.1.jar"
   }
 ]
 ````
@@ -73,26 +81,40 @@ API方跑路了，官方API又要key，这个功能现在应该不会起作用�
 {
   "common": [
     {
-      "md5": "19601f4688469c8aab5ba3e6e0ef4e3b",
-      "fileName":"architectury-4.5.75-fabric.jar"
+      "hashValues": {
+        "MD5": "c268b1ec362c8b6ea925442cb7f707cf",
+        "SHA-256": "550443b81cbd75528d67c27f82249469b2debc77ef9f7f8919f88a0320ed6f69",
+        "SHA-512": "68fbc68c1118f3030ce457c5130c33ca673b8947d289a5d22b216b0b78cc5295260fe8954c9efa36d2f1274c7081bf5cdf65d9499e05f5c6e63c0be9e3e249f5"
+      },
+      "fileName": "carpet-fixes-1.19-1.12.2.jar"
     },
-    //...
+    {
+      "hashValues": {
+        "MD5": "9a73bb8744abd59ca9f4cdac1144d23b",
+        "SHA-256": "2a41b6121065cba9f642f9476571daa7ea57808e46320683014d44e352a51056",
+        "SHA-512": "8bf38f9b7212e9637ab7899cc4ad66ab55c60d9006daf4b576d3ab3881e8be82e7cecb1df85bba061a03c7ecf7210fa463034d2a586272cb2a74674af3bfb1bb"
+      },
+      "fileName": "Chunky-1.3.38.jar"
+    }
   ],
   "optional": [
     {
-      "md5":"d5ec2a8babd0dbf95da81a7d7f9a3d15",
-      "fileName":"iris-mc1.18.2-1.2.5.jar"
-    },
-    //...
+      "hashValues": {
+        "MD5": "07a9a306d795d4accf7f1863f904e2bc",
+        "SHA-256": "806f9187d22b3dfe520b521df6fb13206eea8d4e25f4f23bbc3e5156649f6419",
+        "SHA-512": "0cb441d67196700a0fd660ea0e2c8d58b37616370368558de1bf26c8bcb1db95ccba652923ed2305c8439bd83e00983d4f359659b86d72c148160464f03fc99f"
+      },
+      "fileName": "iris-mc1.19.2-1.5.2.jar"
+    }
   ]
 }
 ````
-其中，"md5"项为每个mod的jar文件的MD5哈希值。  
+其中，"hashValues"项为每个mod的jar文件在三种哈希算法下的哈希值。  
 "common"列表中的mod是要求客户端必须安装并及时更新的mod，
 而"optional"列表中的mod是允许玩家自行选择是否安装的mod（例如高清修复Optifine这类，客户端装不装都不影响进入服务器的这种）。
 ### 更新MOD
 客户端请求到mod列表后，将会与本地的mod做比对。  
-在这之前，客户端会提前计算好本地mod的MD5哈希值，且以MD5哈希值为比对mod的**唯一**标准，
+在这之前，客户端会提前计算好本地mod在多个哈希算法下的哈希值表，且以哈希值表为比对mod的**唯一**标准，
 所以**不必为“玩家可能修改mod文件名导致同一个mod下载两份”或类似的潜在问题而担心**。  
 做好比对后，客户端会显示出三份mod列表：
 1. 必选Mods：本地没有而服务器端有的"common"列表中的Mod（无勾选选项，列表中的Mod均会被下载）
@@ -101,9 +123,10 @@ API方跑路了，官方API又要key，这个功能现在应该不会起作用�
 ### 下载MOD
 当玩家在客户端点击“更新Mods”按钮时，程序将会按照上文中Mod列表所述的更新规则进行更新。  
 程序会先删除多余的Mod，后下载需要的Mod。
-下载每一个Mod时，程序都会向 `http://example.com:14238/mods/downloads/{MD5}` 发送GET请求，
-其中`{MD5}`为该Mod的16进制MD5哈希值字串（不分大小写）。
-*注：此处`{MD5}`也可替换为Mod本体的文件名，服务端仍然会返回相应的MOD，但我极度不推荐这么做，此举是为了向1.2.000以前版本的客户端提供支持。*  
+下载每一个Mod时，程序都会向 `http://example.com:14238/mods/downloads/{hashName}/{hashValue}` 发送GET请求，
+其中`{hashName}`为检索Mod文件所使用的哈希算法（目前支持MD5, SHA-256, SHA-512, 其中SHA-512为客户端默认使用的算法），  
+而`{hashValue}`为该Mod使用`{hashName}`算法计算出的哈希值字串（不分大小写）。
+*注：此处`/mods/downloads/{hashName}/{hashValue}`也可替换为`/mods/downloads/{Mod本体的文件名}`，服务端仍然会返回相应的MOD，但我不推荐这么做，此举是为了向1.2.000以前版本的客户端提供支持。*  
 如果服务器端对该Mod没有设置下载重定向，那么服务器将会直接回应200 OK，并发送该Mod的jar文件包本体，如下：
 ````
 HTTP/1.1 200 OK

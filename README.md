@@ -46,12 +46,20 @@ An example of ``modupdater_redirection_list.json``
 ````json
 [
   {
-    "md5": "bd7bd8bbcc8bf69339766b3b5951b42c",
-    "url": "https://edge.forgecdn.net/files/3272/82/jei-1.16.5-7.6.3.81.jar"
+    "hashValues": {
+      "MD5": "367e4dbc9cf9c918997df0892566e491",
+      "SHA-256": "0cc69ddef9f50a0a0515c2e756ae9139c32b07b101121d96c153775dcc0ad174",
+      "SHA-512": "344793519691abc511ca5ea88a00c95cae67727bf00b5f34adcb07b97b24f19e034c9a12c6cfcaa2c7f43eab193e8abe28cd437aeb9148eeb1258f7c78473099"
+    },
+    "url": "https://cdn.modrinth.com/data/E6FUtRJh/versions/E0HCy6sV/Adorn-3.8.1%2B1.19.2-fabric.jar"
   },
   {
-    "md5": "e892a46e806a6fcf945bfe4999665b53",
-    "url": "https://edge.forgecdn.net/files/3222/705/Ding-1.16.5-1.3.0.jar"
+    "hashValues": {
+      "MD5": "337332a7dcec6fa44735700bcb8b521d",
+      "SHA-256": "7172ca079a4276e56bc460acf0097957116c4ae4773d890178202425ce24dfb8",
+      "SHA-512": "092f55d9f46a64dbadfb78e5cf6dcc03d9d77999e52ca00d63adff8fe39166bcf24eb254a2bc6257e95a118bad6912ce56cfe8fb71793f3034226e7f0243f2ac"
+    },
+    "url": "https://cdn.modrinth.com/data/G1epq3jN/versions/1.19.1-fabric0.58.5-1.3.1/advancementinfo-1.19.1-fabric0.58.5-1.3.1.jar"
   }
 ]
 ````
@@ -73,23 +81,37 @@ and the server will return a json such as this:
 {
   "common": [
     {
-      "md5": "19601f4688469c8aab5ba3e6e0ef4e3b",
-      "fileName":"architectury-4.5.75-fabric.jar"
+      "hashValues": {
+        "MD5": "c268b1ec362c8b6ea925442cb7f707cf",
+        "SHA-256": "550443b81cbd75528d67c27f82249469b2debc77ef9f7f8919f88a0320ed6f69",
+        "SHA-512": "68fbc68c1118f3030ce457c5130c33ca673b8947d289a5d22b216b0b78cc5295260fe8954c9efa36d2f1274c7081bf5cdf65d9499e05f5c6e63c0be9e3e249f5"
+      },
+      "fileName": "carpet-fixes-1.19-1.12.2.jar"
     },
-    //...
+    {
+      "hashValues": {
+        "MD5": "9a73bb8744abd59ca9f4cdac1144d23b",
+        "SHA-256": "2a41b6121065cba9f642f9476571daa7ea57808e46320683014d44e352a51056",
+        "SHA-512": "8bf38f9b7212e9637ab7899cc4ad66ab55c60d9006daf4b576d3ab3881e8be82e7cecb1df85bba061a03c7ecf7210fa463034d2a586272cb2a74674af3bfb1bb"
+      },
+      "fileName": "Chunky-1.3.38.jar"
+    }
   ],
   "optional": [
     {
-      "md5":"d5ec2a8babd0dbf95da81a7d7f9a3d15",
-      "fileName":"iris-mc1.18.2-1.2.5.jar"
-    },
-    //...
+      "hashValues": {
+        "MD5": "07a9a306d795d4accf7f1863f904e2bc",
+        "SHA-256": "806f9187d22b3dfe520b521df6fb13206eea8d4e25f4f23bbc3e5156649f6419",
+        "SHA-512": "0cb441d67196700a0fd660ea0e2c8d58b37616370368558de1bf26c8bcb1db95ccba652923ed2305c8439bd83e00983d4f359659b86d72c148160464f03fc99f"
+      },
+      "fileName": "iris-mc1.19.2-1.5.2.jar"
+    }
   ]
 }
 ````
-"md5" is the MD5 value of the jar file.  
+"hashValues" is the hash value table of the jar file.  
 Mods in "common" list are required to keep up with the server,
-while mods in "optional" list just literally means optional.
+while mods in "optional" list just literally means optional, or in other words, usually client side only mods.
 ### Update Mod
 After received mod list, the client will compare the local mod list with the remote one.   
 Before that, the client calculates the MD5 value of each mod, and use MD5 value as the only identification of the mod.
@@ -101,10 +123,11 @@ After comparison, the client will show three lists of mods:
 ### Download Mod
 When player click the "Update Mods" button, the client will update mods according the mod list rules showed above.  
 Deletion are performed before downloading.  
-When downloading each mod, the client will send request to `http://example.com:14238/mods/downloads/{MD5}` 
-where `{MD5}` is the MD5 value of the mod jar file.
-*Note: `{MD5}` can be the file name of the mod jar file, and the server will respond correctly.
-But this is not recommended because it is designed to provide support to older versions before 1.2.000.*  
+When downloading each mod, the client will send request to `http://example.com:14238/mods/downloads/{hashName}/{hashValue}` 
+where `{hashName}` is the hash algorithm name to search the mod file (supports MD5, SHA-256, SHA-512; SHA-512 is default)  
+and `{hashValue}` is the hash value of the mod jar file in the corresponding hash algorithm.
+*Note: `/mods/downloads/{hashName}/{hashValue}` can be replaced by `/mods/downloads/{fileName}`, and the server will respond correctly.
+But this is not recommended because it is deprecated and designed to provide support to older versions before 1.2.000.*  
 If there's no redirection set for this mod, the server will respond `200 OK` and send the mod jar file, as below:
 ````
 HTTP/1.1 200 OK

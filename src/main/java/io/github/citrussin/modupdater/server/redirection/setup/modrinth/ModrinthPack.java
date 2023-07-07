@@ -2,8 +2,10 @@ package io.github.citrussin.modupdater.server.redirection.setup.modrinth;
 
 import com.google.gson.annotations.Expose;
 import io.github.citrussin.modupdater.GsonManager;
+import io.github.citrussin.modupdater.Utils;
 
 import java.io.*;
+import java.nio.file.Files;
 import java.util.List;
 import java.util.Map;
 import java.util.zip.ZipEntry;
@@ -39,22 +41,16 @@ public class ModrinthPack {
     }
 
     public static ModrinthPack fromMrPack(File file) throws IOException {
-        ModrinthPack pack = null;
-        ZipInputStream zipStream = new ZipInputStream(new FileInputStream(file));
-        ZipEntry entry = zipStream.getNextEntry();
-        while (entry != null) {
-            String name = entry.getName();
-            if (name.equals(INDEX_JSON_NAME) && !entry.isDirectory()) {
-                InputStreamReader reader = new InputStreamReader(zipStream);
-                pack = fromReaderJson(reader);
-                zipStream.closeEntry();
-                break;
-            }
-            zipStream.closeEntry();
-            entry = zipStream.getNextEntry();
-        }
-        zipStream.close();
+        ZipInputStream zipStream = new ZipInputStream(Files.newInputStream(file.toPath()));
+        ZipEntry entry = Utils.zipLocateToFile(zipStream, INDEX_JSON_NAME);
 
+        if (entry == null || entry.isDirectory()) {
+            return null;
+        }
+
+        InputStreamReader reader = new InputStreamReader(zipStream);
+        ModrinthPack pack = fromReaderJson(reader);
+        zipStream.close();
         return pack;
     }
 }
