@@ -48,8 +48,7 @@ public abstract class RedirectionInitalizer {
         List<ModRedirectionProvider> providerList;
         File redirectionFile = new File(serverConfig.redirectionListPath);
         if (redirectionFile.exists()) {
-            Type type = new TypeToken<LinkedList<ModRedirectionProvider>>() {
-            }.getType();
+            Type type = new TypeToken<LinkedList<ModRedirectionProvider>>() {}.getType();
             FileReader rd = new FileReader(redirectionFile);
             providerList = GsonManager.mapGson.fromJson(rd, type);
         } else {

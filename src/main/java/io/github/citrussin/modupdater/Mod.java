@@ -11,6 +11,9 @@ import java.io.*;
 import java.nio.file.Files;
 import java.security.MessageDigest;
 import java.util.*;
+import java.util.jar.Attributes;
+import java.util.jar.JarInputStream;
+import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 public class Mod{
@@ -36,7 +39,7 @@ public class Mod{
     public final File localFile;
 
     private LoaderType modLoaderType = LoaderType.UNKNOWN;
-    private String modid = null;
+    private String modId = null;
     private String version = null;
 
     public Mod(File file) {
@@ -93,8 +96,12 @@ public class Mod{
         return this.localFile != null;
     }
 
-    private void readForgeMod(InputStreamReader isr) throws IOException {
-        BufferedReader br = new BufferedReader(isr);
+    private void readForgeMod() throws IOException {
+        ZipInputStream zis = new ZipInputStream(Files.newInputStream(this.localFile.toPath()));
+        ZipEntry entry = Utils.zipLocateToFile(zis, FORGE_MOD_DESCRIPTION_FILE_PATH);
+        assert entry != null;
+
+        BufferedReader br = new BufferedReader(new InputStreamReader(zis));
 
         String line = br.readLine();
         while (!line.trim().startsWith("[[mods]]")) {
@@ -104,27 +111,43 @@ public class Mod{
         line = br.readLine();
         while (line != null) {
             line = line.trim();
-            if (line.isEmpty() || line.startsWith("[[")) {
+            if (line.startsWith("[[")) {
                 break;
             }
-            String[] arr = line.split("=");
+            String[] arr = line.split("#")[0].split("=");
             if (arr.length == 2) {
-                if ("modId".equals(arr[1])) {
-                    this.modid = arr[1].replace("\"", "");
-                } else if ("version".equals(arr[1])) {
-                    this.version = arr[1].replace("\"", "");
+                if (arr[0].trim().equals("modId")) {
+                    this.modId = arr[1].trim().replace("\"", "");
+                } else if (arr[0].trim().equals("version")) {
+                    this.version = arr[1].trim().replace("\"", "");
                 }
             }
             line = br.readLine();
         }
+
+        zis.close();
+
+        if (this.version != null && this.version.equals("${file.jarVersion}")) {
+            JarInputStream jis = new JarInputStream(Files.newInputStream(this.localFile.toPath()));
+            Attributes attributes = jis.getManifest().getMainAttributes();
+            this.version = attributes.getValue("Implementation-Version");
+            jis.close();
+        }
     }
 
-    private void readFabricMod(InputStreamReader isr){
+    private void readFabricMod() throws IOException {
+        ZipInputStream zis = new ZipInputStream(Files.newInputStream(this.localFile.toPath()));
+        ZipEntry entry = Utils.zipLocateToFile(zis, FABRIC_MOD_DESCRIPTION_FILE_PATH);
+        assert entry != null;
+
+        InputStreamReader isr = new InputStreamReader(zis);
         JsonObject obj = JsonParser.parseReader(isr).getAsJsonObject();
         assert obj.has("schemaVersion");
 
-        this.modid = obj.get("id").getAsString();
+        this.modId = obj.get("id").getAsString();
         this.version = obj.get("version").getAsString();
+
+        zis.close();
     }
 
     private void analyzeModLoaderType() throws IOException {
@@ -153,28 +176,25 @@ public class Mod{
             throw new FileNotFoundException("Mod file not available");
         }
         LoaderType loaderType = this.getModLoaderType();
-        ZipInputStream zis = new ZipInputStream(Files.newInputStream(this.localFile.toPath()));
+
         switch (loaderType) {
             case FORGE:
-                Utils.zipLocateToFile(zis, FORGE_MOD_DESCRIPTION_FILE_PATH);
-                readForgeMod(new InputStreamReader(zis));
+                readForgeMod();
                 break;
             case FABRIC:
-                Utils.zipLocateToFile(zis, FABRIC_MOD_DESCRIPTION_FILE_PATH);
-                readFabricMod(new InputStreamReader(zis));
+                readFabricMod();
                 break;
         }
-        zis.close();
     }
 
     public String getModId() {
         try {
-            if (this.modid == null) {
+            if (this.modId == null) {
                 processModFileInfo();
             }
         } catch (Exception ignored) {}
-        if (this.modid != null) {
-            return this.modid;
+        if (this.modId != null) {
+            return this.modId;
         } else {
             return this.getFilename();
         }
