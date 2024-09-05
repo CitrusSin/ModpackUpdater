@@ -106,7 +106,7 @@ public class UpdateStrategy {
         if (url.endsWith("/")) {
             url = url.substring(0, url.length()-1);
         }
-        String dURL = url + "/mods/downloads/" + Mod.DEFAULT_HASH.getAlgorithm() + "/";
+        String dURL = url + "/mods/downloads/" + Mod.DEFAULT_HASH.getName() + "/";
         TaskDownload dt = new TaskDownload(dURL + mod.getHashString(Mod.DEFAULT_HASH), file);
         builder.addTask(dt);
     }

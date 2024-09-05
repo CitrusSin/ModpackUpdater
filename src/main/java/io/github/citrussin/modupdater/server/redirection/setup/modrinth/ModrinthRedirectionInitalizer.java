@@ -4,6 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import io.github.citrussin.modupdater.HashAlgorithm;
 import io.github.citrussin.modupdater.Mod;
 import io.github.citrussin.modupdater.ModUpdaterMain;
 import io.github.citrussin.modupdater.network.NetworkUtils;
@@ -25,7 +26,7 @@ public class ModrinthRedirectionInitalizer extends RedirectionInitalizer {
 
     @Override
     protected String urlFromLocalMod(Mod mod) throws IOException {
-        String hashString = mod.getHashString(DigestUtils.getSha512Digest());
+        String hashString = mod.getHashString(HashAlgorithm.SHA512);
 
         String requestUrl =
                 MODRINTH_API + String.format(

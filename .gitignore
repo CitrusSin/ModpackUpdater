@@ -1,6 +1,7 @@
 .gradle
 .idea
 .minecraft
+bin
 build
 clientMods
 mods

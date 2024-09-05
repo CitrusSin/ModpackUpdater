@@ -11,6 +11,7 @@ import java.io.*;
 import java.nio.file.Files;
 import java.security.MessageDigest;
 import java.util.*;
+import java.util.function.Supplier;
 import java.util.jar.Attributes;
 import java.util.jar.JarInputStream;
 import java.util.zip.ZipEntry;
@@ -19,13 +20,13 @@ import java.util.zip.ZipInputStream;
 public class Mod{
     protected static final Log log = LogFactory.getLog(Mod.class);
 
-    public static final MessageDigest[] HASH_ALGORITHMS = {
-        DigestUtils.getMd5Digest(),
-        DigestUtils.getSha256Digest(),
-        DigestUtils.getSha512Digest()
-    };
+    public static final List<HashAlgorithm> HASH_ALGORITHMS = Arrays.asList(
+            HashAlgorithm.SHA512,
+            HashAlgorithm.SHA256,
+            HashAlgorithm.MD5
+    );
 
-    public static final MessageDigest DEFAULT_HASH = DigestUtils.getSha512Digest();
+    public static final HashAlgorithm DEFAULT_HASH = HashAlgorithm.SHA512;
 
     private static final String FORGE_MOD_DESCRIPTION_FILE_PATH = "META-INF/mods.toml";
     private static final String FABRIC_MOD_DESCRIPTION_FILE_PATH = "fabric.mod.json";
@@ -46,32 +47,32 @@ public class Mod{
         this(file, HASH_ALGORITHMS);
     }
 
-    public Mod(File file, MessageDigest[] algorithms) {
+    public Mod(File file, List<HashAlgorithm> algorithms) {
         fileName = file.getName();
         localFile = file;
         hashValues = new TreeMap<>();
-        for (MessageDigest algorithm : algorithms) {
+        for (HashAlgorithm algorithm : algorithms) {
             calculateHashString(algorithm);
         }
-        if (!hashValues.containsKey(DEFAULT_HASH.getAlgorithm())) {
+        if (!hashValues.containsKey(DEFAULT_HASH.getName())) {
             calculateHashString(DEFAULT_HASH);
         }
     }
 
-    private void calculateHashString(MessageDigest hashAlgorithm) {
+    private void calculateHashString(HashAlgorithm hashAlgorithm) {
         try {
-            String algorithmName = hashAlgorithm.getAlgorithm();
+            String algorithmName = hashAlgorithm.getName();
             hashValues.put(algorithmName, Utils.calculateFileHash(localFile, hashAlgorithm));
         } catch (IOException e) {
             log.error("Hash calculation failed: ", e);
         }
     }
 
-    public String getHashString(MessageDigest hashAlgorithm) {
-        if (!hashValues.containsKey(hashAlgorithm.getAlgorithm())) {
+    public String getHashString(HashAlgorithm hashAlgorithm) {
+        if (!hashValues.containsKey(hashAlgorithm.getName())) {
             calculateHashString(hashAlgorithm);
         }
-        return hashValues.get(hashAlgorithm.getAlgorithm());
+        return hashValues.get(hashAlgorithm.getName());
     }
 
     public String getFilename() {
@@ -80,7 +81,7 @@ public class Mod{
 
     public boolean checkHashValues(Map<String, String> hashValues) {
         Set<String> commonAlgorithmSet = Utils.getIntersection(hashValues.keySet(), this.hashValues.keySet());
-        assert commonAlgorithmSet.contains(DEFAULT_HASH.getAlgorithm());
+        assert commonAlgorithmSet.contains(DEFAULT_HASH.getName());
 
         boolean match = true;
         for (String algorithmName : commonAlgorithmSet) {

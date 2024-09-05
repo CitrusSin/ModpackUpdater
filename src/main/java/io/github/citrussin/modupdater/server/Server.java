@@ -1,9 +1,6 @@
 package io.github.citrussin.modupdater.server;
 
-import io.github.citrussin.modupdater.GsonManager;
-import io.github.citrussin.modupdater.Mod;
-import io.github.citrussin.modupdater.ModUpdaterMain;
-import io.github.citrussin.modupdater.Utils;
+import io.github.citrussin.modupdater.*;
 import io.github.citrussin.modupdater.server.handlers.ModHashTransferHandler;
 import io.github.citrussin.modupdater.server.handlers.ModListHandler;
 import io.github.citrussin.modupdater.server.handlers.ModTransferHandler;
@@ -47,9 +44,9 @@ public class Server {
         UriHttpRequestHandlerMapper mapper = new UriHttpRequestHandlerMapper();
         mapper.register("/mods/list", new ModListHandler(config));
         mapper.register("/mods/downloads/*", new ModTransferHandler(config, manifestManager));
-        for (MessageDigest hashAlgorithm : Mod.HASH_ALGORITHMS) {
+        for (HashAlgorithm hashAlgorithm : Mod.HASH_ALGORITHMS) {
             mapper.register(
-                    String.format("/mods/downloads/%s/*", hashAlgorithm.getAlgorithm()),
+                    String.format("/mods/downloads/%s/*", hashAlgorithm.getName()),
                     new ModHashTransferHandler(config, manifestManager, hashAlgorithm)
             );
         }

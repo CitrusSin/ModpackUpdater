@@ -9,6 +9,7 @@ import java.nio.file.Files;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.util.*;
+import java.util.function.Supplier;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -68,10 +69,11 @@ public class Utils {
         writer.close();
     }
 
-    public static String calculateFileHash(File file, MessageDigest hashAlgorithm) throws IOException {
+    public static String calculateFileHash(File file, Supplier<MessageDigest> hashAlgorithm) throws IOException {
+        MessageDigest digestion = hashAlgorithm.get();
         FileInputStream inputStream = new FileInputStream(file);
         DigestInputStream digestStream =
-                new DigestInputStream(inputStream, hashAlgorithm);
+                new DigestInputStream(inputStream, digestion);
         byte[] buffer = new byte[4096];
         while (true) {
             if (digestStream.read(buffer) <= -1) break;
@@ -83,11 +85,11 @@ public class Utils {
         return hash;
     }
 
-    public static Map<String, String> calculateFileHash(File file, MessageDigest[] hashAlgorithms)
+    public static Map<String, String> calculateFileHash(File file, List<HashAlgorithm> hashAlgorithms)
             throws IOException {
         Map<String, String> map = new TreeMap<>();
-        for (MessageDigest hashAlgorithm : hashAlgorithms) {
-            map.put(hashAlgorithm.getAlgorithm(), calculateFileHash(file, hashAlgorithm));
+        for (HashAlgorithm hashAlgorithm : hashAlgorithms) {
+            map.put(hashAlgorithm.getName(), calculateFileHash(file, hashAlgorithm));
         }
         return map;
     }

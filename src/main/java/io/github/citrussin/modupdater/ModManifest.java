@@ -54,7 +54,7 @@ public class ModManifest {
     public Mod searchByHash(String hashString) {
         Mod target = null;
         // Try every algorithm
-        for (MessageDigest hashAlgorithm : Mod.HASH_ALGORITHMS) {
+        for (HashAlgorithm hashAlgorithm : Mod.HASH_ALGORITHMS) {
             target = searchByHash(hashAlgorithm, hashString);
             if (target != null) {
                 break;
@@ -63,7 +63,7 @@ public class ModManifest {
         return target;
     }
 
-    public Mod searchByHash(MessageDigest hashAlgorithm, String hashString) {
+    public Mod searchByHash(HashAlgorithm hashAlgorithm, String hashString) {
         for (Mod mod : commonMods) {
             if (mod.getHashString(hashAlgorithm).equalsIgnoreCase(hashString)) {
                 return mod;
@@ -91,14 +91,14 @@ public class ModManifest {
         return null;
     }
 
-    public ModProvider getProviderByHash(MessageDigest hashAlgorithm, String hash) {
+    public ModProvider getProviderByHash(HashAlgorithm hashAlgorithm, String hash) {
         if (isRemote()) {
             return null;
         }
         for (ModRedirectionProvider redirection : modRedirectionProviders) {
             if (
-                    redirection.hashValues.containsKey(hashAlgorithm.getAlgorithm()) &&
-                    redirection.hashValues.get(hashAlgorithm.getAlgorithm()).equalsIgnoreCase(hash)
+                    redirection.hashValues.containsKey(hashAlgorithm.getName()) &&
+                    redirection.hashValues.get(hashAlgorithm.getName()).equalsIgnoreCase(hash)
             ) {
                 return redirection;
             }

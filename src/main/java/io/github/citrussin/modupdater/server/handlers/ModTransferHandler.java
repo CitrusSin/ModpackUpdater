@@ -16,8 +16,8 @@ import java.nio.charset.StandardCharsets;
 
 public class ModTransferHandler implements HttpRequestHandler {
     protected final Log log = LogFactory.getLog(getClass());
-    ServerConfig config;
-    ModManifestManager manifestManager;
+    private ServerConfig config;
+    private ModManifestManager manifestManager;
 
     public ModTransferHandler(ServerConfig config, ModManifestManager manifestManager) {
         this.config = config;

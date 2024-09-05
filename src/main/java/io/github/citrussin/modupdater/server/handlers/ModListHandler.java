@@ -15,7 +15,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
 public class ModListHandler implements HttpRequestHandler {
-    final ServerConfig config;
+    private final ServerConfig config;
 
     public ModListHandler(ServerConfig config) {
         this.config = config;

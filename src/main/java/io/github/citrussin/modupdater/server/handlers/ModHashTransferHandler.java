@@ -1,5 +1,6 @@
 package io.github.citrussin.modupdater.server.handlers;
 
+import io.github.citrussin.modupdater.HashAlgorithm;
 import io.github.citrussin.modupdater.server.ModManifestManager;
 import io.github.citrussin.modupdater.server.ServerConfig;
 import io.github.citrussin.modupdater.server.redirection.ModProvider;
@@ -14,11 +15,11 @@ import java.security.MessageDigest;
 
 public class ModHashTransferHandler implements HttpRequestHandler {
 
-    ServerConfig config;
-    ModManifestManager manifestManager;
-    MessageDigest hashAlgorithm;
+    private ServerConfig config;
+    private ModManifestManager manifestManager;
+    private HashAlgorithm hashAlgorithm;
 
-    public ModHashTransferHandler(ServerConfig config, ModManifestManager manifestManager, MessageDigest hashAlgorithm) {
+    public ModHashTransferHandler(ServerConfig config, ModManifestManager manifestManager, HashAlgorithm hashAlgorithm) {
         this.config = config;
         this.manifestManager = manifestManager;
         this.hashAlgorithm = hashAlgorithm;
