@@ -16,7 +16,7 @@ import java.io.IOException;
 public class ModUpdaterMain {
     private static final Log log = LogFactory.getLog(ModUpdaterMain.class);
     public static final String SERVICE_NAME = "ModpackUpdateService";
-    public static final String SERVICE_VER  = "1.5.000";
+    public static final String SERVICE_VER  = "1.5.001";
 
     public static void main(String[] args) {
         CommandParser<ModUpdaterArguments> parser = new CommandParser<>(ModUpdaterArguments.class);
