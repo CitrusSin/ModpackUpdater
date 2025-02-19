@@ -14,19 +14,20 @@ repositories {
 }
 
 dependencies {
-    compile 'commons-codec:commons-codec:1.15'
-    compile 'commons-logging:commons-logging:1.2'
-    compile 'org.apache.httpcomponents:httpcore:4.4.15'
-    compile 'org.apache.httpcomponents:httpclient:4.5.14'
-    compile 'com.google.code.gson:gson:2.10.1'
+    implementation 'commons-codec:commons-codec:1.15'
+    implementation 'commons-logging:commons-logging:1.2'
+    implementation 'org.apache.httpcomponents:httpcore:4.4.15'
+    implementation 'org.apache.httpcomponents:httpclient:4.5.14'
+    implementation 'com.google.code.gson:gson:2.10.1'
 }
 
 jar {
-    from {
-        configurations.runtime.collect{zipTree(it)}
-    }
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     manifest {
         attributes 'Main-Class': mainClassName
+    }
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
     }
 }
 
